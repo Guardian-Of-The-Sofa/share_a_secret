@@ -1,0 +1,22 @@
+{
+  "name": "hn/hn-share-secret",
+  "description": "A  extension.",
+  "type": "typo3-cms-extension",
+  "license": "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Jens Pausewang, hauptsache.net GmbH",
+      "email": "jens@hauptsache.net",
+      "role": "Developer",
+      "homepage": "https://hauptsache.net/"
+    }
+  ],
+  "require": {
+    "typo3/cms-core": ">=8.7 <=8.9.99 || 9.5.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Hn\\HnShareSecret\\": "Classes/"
+    }
+  }
+}
