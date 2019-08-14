@@ -1,0 +1,60 @@
+<f:comment>
+    Optional arguments:
+        The following arguments set the value for the corresponding input fields:
+            company
+            username
+            plainPassword
+</f:comment>
+
+<f:if condition="{frontendUser}">
+    <f:variable name="company" value="{frontendUser.company -> f:or(alternative: '')}"/>
+    <f:variable name="username" value="{frontendUser.username -> f:or(alternative: ''}"/>
+    <f:variable name="password" value="{frontendUser.password -> f:or(alternative: ''}"/>
+</f:if>
+
+<f:form action="create"
+        name="frontendUser"
+        object="{frontendUser}"
+>
+    <div class="container">
+        <div class="row">
+            <div class="col col-md-6">
+                <div class="form-group">
+                    <label for="company">Company:</label>
+                    <f:form.textfield id="company"
+                                      class="form-control"
+                                      value="{company}"
+                                      property="company"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <f:form.textfield id="username"
+                                      class="form-control"
+                                      value="{username}"
+                                      property="username"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <f:form.textfield id="password"
+                                      class="form-control"
+                                      type="password"
+                                      value="{password}"
+                                      property="password"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="password-2">Reenter your password:</label>
+                    <f:form.textfield id="password-2"
+                                      class="form-control"
+                                      name="passwordReentered"
+                                      type="password"
+                    />
+                </div>
+                <f:form.submit class="btn btn-primary"
+                value="Sign in"/>
+            </div>
+        </div>
+    </div>
+</f:form>

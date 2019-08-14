@@ -16,7 +16,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Hn\\HnShareSecret\\": "Classes/"
+      "Hn\\HnShareSecret\\": "Classes"
     }
   }
 }
