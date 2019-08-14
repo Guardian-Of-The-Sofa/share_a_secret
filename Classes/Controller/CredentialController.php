@@ -7,7 +7,8 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 
-class CredentialController extends ActionController {
+class CredentialController extends ActionController
+{
     /**
      * @var CredentialRepository
      */
@@ -16,7 +17,8 @@ class CredentialController extends ActionController {
     /**
      * @param CredentialRepository $credentialRepository
      */
-    public function injectRepository(CredentialRepository $credentialRepository){
+    public function injectRepository(CredentialRepository $credentialRepository)
+    {
         $this->credentialRepository = $credentialRepository;
     }
 
@@ -24,9 +26,10 @@ class CredentialController extends ActionController {
     /**
      * @param array $arguments
      */
-    public function signInAction(){
-        
-   }
+    public function signInAction()
+    {
+
+    }
 
     /**
      * @param string $company
@@ -39,8 +42,9 @@ class CredentialController extends ActionController {
     public function createAction(string $company,
                                  string $username,
                                  string $plainPassword,
-                                 string $plainPasswordReentered ){
-        if($plainPassword != $plainPasswordReentered){
+                                 string $plainPasswordReentered)
+    {
+        if ($plainPassword != $plainPasswordReentered) {
             $this->redirect('signIn', null, null, [
                 'arguments' => [
                     'company' => $company,

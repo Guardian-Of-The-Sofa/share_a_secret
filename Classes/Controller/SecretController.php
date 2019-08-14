@@ -18,7 +18,8 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 /**
  * Class SecretController
  */
-class SecretController extends ActionController {
+class SecretController extends ActionController
+{
 
     /**
      * @var SecretRepository
@@ -28,19 +29,23 @@ class SecretController extends ActionController {
     /**
      * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
      */
-    public function injectRepository(SecretRepository $secretRepository){
+    public function injectRepository(SecretRepository $secretRepository)
+    {
         $this->secretRepository = $secretRepository;
     }
 
-    public function indexAction(){
+    public function indexAction()
+    {
 
     }
 
-    public function signInAction(){
+    public function signInAction()
+    {
 
     }
 
-    public function newAction(){
+    public function newAction()
+    {
 
     }
 
@@ -53,7 +58,8 @@ class SecretController extends ActionController {
      * @throws UnsupportedRequestTypeException
      * @throws EnvironmentIsBrokenException
      */
-    public function createAction(string $message, string $plainPassword){
+    public function createAction(string $message, string $plainPassword)
+    {
         $secret = new Secret($message, $plainPassword);
         $this->secretRepository->add($secret);
         $this->objectManager->get(PersistenceManager::class)->persistAll();
@@ -64,7 +70,8 @@ class SecretController extends ActionController {
     /**
      * @param Secret $secret
      */
-    public function showLinkAction(Secret $secret){
+    public function showLinkAction(Secret $secret)
+    {
         $this->view->assign('secret', $secret);
         $host = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
 //        $validParameters = [
@@ -105,36 +112,50 @@ class SecretController extends ActionController {
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
      */
-    public function validatePasswordAction(string $password, string $linkHash){
+    public function validatePasswordAction(string $password, string $linkHash)
+    {
         /**
          * @var Secret $secret
          */
         //TODO: make sure $linkHash ist distinct.
         $secret = $this->secretRepository->findOneByLinkHash($linkHash);
-        if($secret->validatePassword($password)){
+        if ($secret->validatePassword($password)) {
             $this->forward('show', null, null, ['secret' => $secret, 'password' => $password]);
 //            $this->redirect('show', null, null, [
 //                'secret' => $secret,
 //                'password' => $password,
 //            ]);
-        }else{
+        } else {
             $this->redirect('inputPassword', null, null, [
                 'linkHash' => $linkHash,
             ]);
         }
     }
 
-    public function inputPasswordAction(string $linkHash){
+    public function inputPasswordAction(string $linkHash)
+    {
         $this->view->assign('linkHash', $linkHash);
     }
 
     /**
-     * @param Secret $secret
+     * @param string $linkHash
      * @param string $password
      * @throws EnvironmentIsBrokenException
+     * @throws InvalidPasswordHashException
+     * @throws StopActionException
+     * @throws UnsupportedRequestTypeException
      * @throws WrongKeyOrModifiedCiphertextException
      */
-    public function showAction(Secret $secret, string $password){
+    public function showAction(string $linkHash, string $password)
+    {
+        $secret = $this->secretRepository->findOneByLinkHash($linkHash);
+
+        if (!$secret->validatePassword($password)) {
+            $this->redirect('inputPassword', null, null, [
+                'linkHash' => $linkHash,
+            ]);
+        }
+
         $this->view->assign('message', $secret->getDecryptedMessage($password));
     }
 }

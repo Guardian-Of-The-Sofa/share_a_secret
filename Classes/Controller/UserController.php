@@ -28,7 +28,7 @@ class UserController extends ActionController
     public function newAction(string $company = null)
     {
         debug($frontendUser, 'newAction');
-        if($frontendUser){
+        if ($frontendUser) {
             $this->view->assign('frontendUser', $frontendUser);
         }
     }
@@ -43,7 +43,7 @@ class UserController extends ActionController
     public function createAction(FrontendUser $frontendUser, string $passwordReentered)
     {
         debug($frontendUser);
-        if($frontendUser->getPassword() != $passwordReentered){
+        if ($frontendUser->getPassword() != $passwordReentered) {
             $this->redirect('new', null, null, ['company' => $frontendUser->getCompany()]);
         }
 

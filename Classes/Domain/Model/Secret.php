@@ -1,4 +1,5 @@
 <?php
+
 namespace Hn\HnShareSecret\Domain\Model;
 
 use DateTime;
@@ -9,7 +10,8 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 use Defuse\Crypto\Crypto;
 
-class Secret extends AbstractEntity{
+class Secret extends AbstractEntity
+{
     /**
      * @var string
      */
@@ -92,17 +94,19 @@ class Secret extends AbstractEntity{
      * @return string
      * @throws InvalidPasswordHashException
      */
-    public function generatePasswordHash(string $plainPassword): string{
+    public function generatePasswordHash(string $plainPassword): string
+    {
         $hashInstance = GeneralUtility::makeInstance(PasswordHashFactory::class)
             ->getDefaultHashInstance('FE');
 
         return $hashInstance->getHashedPassword($plainPassword);
     }
 
-    public function generateLinkHash(): string {
+    public function generateLinkHash(): string
+    {
         $string = $this->message
-                . $this->passwordHash
-                . strval((new DateTime())->getTimestamp() * 1.0/random_int(1, PHP_INT_MAX));
+            . $this->passwordHash
+            . strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
 
         return hash('sha512', $string);
     }
@@ -112,7 +116,8 @@ class Secret extends AbstractEntity{
      * @return bool
      * @throws InvalidPasswordHashException
      */
-    public function validatePassword(string $plainPassword): bool{
+    public function validatePassword(string $plainPassword): bool
+    {
         return GeneralUtility::makeInstance(PasswordHashFactory::class)
             ->get($this->passwordHash, 'FE')
             ->checkPassword($plainPassword, $this->passwordHash);
@@ -124,7 +129,8 @@ class Secret extends AbstractEntity{
      * @return string
      * @throws EnvironmentIsBrokenException
      */
-    public function encryptMessage(string $message, string $plainPassword){
+    public function encryptMessage(string $message, string $plainPassword)
+    {
         $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
 
         return $encryptedMessage;
@@ -136,7 +142,8 @@ class Secret extends AbstractEntity{
      * @throws EnvironmentIsBrokenException
      * @throws \Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException
      */
-    public function getDecryptedMessage(string $password){
+    public function getDecryptedMessage(string $password)
+    {
         $decryptedMessage = Crypto::decryptWithPassword($this->message, $password);
 
         return $decryptedMessage;
