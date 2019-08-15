@@ -13,6 +13,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
@@ -25,6 +26,13 @@ class SecretController extends ActionController
      * @var SecretRepository
      */
     private $secretRepository;
+
+    public static function mylog(string $str)
+    {
+        $fH = fopen('mylog.txt', 'a');
+        fwrite($fH, $str . "\n");
+        fclose($fH);
+    }
 
     /**
      * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
@@ -120,7 +128,10 @@ class SecretController extends ActionController
         //TODO: make sure $linkHash ist distinct.
         $secret = $this->secretRepository->findOneByLinkHash($linkHash);
         if ($secret->validatePassword($password)) {
-            $this->forward('show', null, null, ['secret' => $secret, 'password' => $password]);
+            $this->forward('show', null, null, [
+                'secret' => $secret,
+                'password' => $password
+            ]);
 //            $this->redirect('show', null, null, [
 //                'secret' => $secret,
 //                'password' => $password,
@@ -137,25 +148,51 @@ class SecretController extends ActionController
         $this->view->assign('linkHash', $linkHash);
     }
 
+    public function delay(Secret &$secret)
+    {
+        $diffTime = (new \DateTime())->getTimestamp() - $secret->getLastAttempt();
+        self::mylog('$diffTime=' . $diffTime);
+        if ($diffTime < 5) {
+            sleep(1.5 ** $secret->getAttempt());
+        } else {
+            $secret->setAttempt(0);
+        }
+    }
+
     /**
      * @param string $linkHash
      * @param string $password
      * @throws EnvironmentIsBrokenException
+     * @throws IllegalObjectTypeException
      * @throws InvalidPasswordHashException
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
      * @throws WrongKeyOrModifiedCiphertextException
+     * @throws UnknownObjectException
      */
     public function showAction(string $linkHash, string $password)
     {
         $secret = $this->secretRepository->findOneByLinkHash($linkHash);
 
-        if (!$secret->validatePassword($password)) {
+        if ($secret) {
+            if (!$secret->validatePassword($password)) {
+                $this->delay($secret);
+                $attempt = $secret->getAttempt();
+                $secret->setAttempt(++$attempt);
+                $secret->updateLastAttempt();
+                $this->secretRepository->update($secret);
+                $this->objectManager->get(PersistenceManager::class)->persistAll();
+                $this->redirect('inputPassword', null, null, [
+                    'linkHash' => $linkHash,
+                ]);
+            } else {
+                $this->view->assign('message', $secret->getDecryptedMessage($password));
+            }
+        } else {
+            sleep(5);
             $this->redirect('inputPassword', null, null, [
                 'linkHash' => $linkHash,
             ]);
         }
-
-        $this->view->assign('message', $secret->getDecryptedMessage($password));
     }
 }

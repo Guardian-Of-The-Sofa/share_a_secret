@@ -4,6 +4,7 @@ namespace Hn\HnShareSecret\Domain\Model;
 
 use DateTime;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\InvalidPasswordHashException;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -28,6 +29,17 @@ class Secret extends AbstractEntity
     protected $linkHash;
 
     /**
+     * @var int, the number of failed password inputs.
+     */
+    protected $attempt;
+
+    /**
+     * @var int, the unix time of the last failed password input.
+     */
+    protected $lastAttempt;
+
+
+    /**
      * Secret constructor.
      * @param string $message , A plaintext message.
      * @param string $plainPassword , the plaintext password to encrypt the message.
@@ -39,6 +51,7 @@ class Secret extends AbstractEntity
         $this->setMessage($this->encryptMessage($message, $plainPassword));
         $this->setPasswordHash($this->generatePasswordHash($plainPassword));
         $this->setLinkHash($this->generateLinkHash());
+        $this->attempt = 0;
     }
 
     /**
@@ -87,6 +100,43 @@ class Secret extends AbstractEntity
     public function setLinkHash(string $linkHash): void
     {
         $this->linkHash = $linkHash;
+    }
+
+    /**
+     * @return int
+     */
+    public function getAttempt(): ?int
+    {
+        return $this->attempt;
+    }
+
+    /**
+     * @param int $attempt
+     */
+    public function setAttempt(int $attempt): void
+    {
+        $this->attempt = $attempt;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastAttempt(): ?int
+    {
+        return $this->lastAttempt;
+    }
+
+    /**
+     * @param int $lastAttempt
+     */
+    public function setLastAttempt(int $lastAttempt): void
+    {
+        $this->lastAttempt = $lastAttempt;
+    }
+
+    public function updateLastAttempt()
+    {
+        $this->lastAttempt = (new DateTime())->getTimestamp();
     }
 
     /**
@@ -140,7 +190,7 @@ class Secret extends AbstractEntity
      * @param string $password
      * @return string
      * @throws EnvironmentIsBrokenException
-     * @throws \Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException
+     * @throws WrongKeyOrModifiedCiphertextException
      */
     public function getDecryptedMessage(string $password)
     {

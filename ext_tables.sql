@@ -6,6 +6,8 @@ CREATE TABLE tx_hnsharesecret_domain_model_secret
     message       text             DEFAULT ''  NOT NULL,
     password_hash varchar(255)                 NOT NULL,
     link_hash     varchar(255)                 NOT NULL,
+    attempt       int(11) unsigned DEFAULT '0' NOT NULL,
+    last_attempt  int(11) unsigned DEFAULT '0' NOT NULL,
 
     PRIMARY KEY (uid),
     KEY parent (pid)

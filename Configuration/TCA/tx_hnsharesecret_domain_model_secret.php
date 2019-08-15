@@ -33,6 +33,24 @@ return [
                 'eval' => 'required',
             ],
         ],
+
+        'attempt' => [
+            'label' => 'Attempt',
+            'config' => [
+                'type' => 'passthrough',
+                'default' => 0,
+
+            ]
+        ],
+
+        'last_attempt' => [
+            'label' => 'Last attempt',
+            'config' => [
+                'type' => 'passthrough',
+                'default' => 0,
+
+            ],
+        ]
     ],
 
     'types' => [
