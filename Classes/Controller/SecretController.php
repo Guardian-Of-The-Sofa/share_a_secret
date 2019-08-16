@@ -49,11 +49,6 @@ class SecretController extends ActionController
 
     }
 
-    public function signInAction()
-    {
-
-    }
-
     public function newAction()
     {
 
@@ -89,54 +84,8 @@ class SecretController extends ActionController
     {
         $this->view->assign('linkHash', $linkHash);
         $host = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
-//        $validParameters = [
-//            'SCRIPT_NAME',
-//            'SCRIPT_FILENAME',
-//            'REQUEST_URI',
-//            'PATH_INFO',
-//            'REMOTE_ADDR',
-//            'REMOTE_HOST',
-//            'HTTP_REFERER',
-//            'HTTP_HOST',
-//            'HTTP_USER_AGENT',
-//            'HTTP_ACCEPT_LANGUAGE',
-//            'QUERY_STRING',
-//            'TYPO3_DOCUMENT_ROOT',
-//            'TYPO3_HOST_ONLY',
-//            'TYPO3_HOST_ONLY',
-//            'TYPO3_REQUEST_HOST',
-//            'TYPO3_REQUEST_URL',
-//            'TYPO3_REQUEST_SCRIPT',
-//            'TYPO3_REQUEST_DIR',
-//            'TYPO3_SITE_URL',
-//            '_ARRAY',
-//        ];
-//
-//        foreach ($validParameters as $vP) {
-//
-//            debug(GeneralUtility::getIndpEnv($vP),$vP);
-//        }
-//        die();
         $this->view->assign('host', $host);
         $this->view->assign('linkHash', $linkHash);
-    }
-
-    /**
-     * @param string $userPassword
-     * @param string $linkHash
-     * @throws EnvironmentIsBrokenException
-     * @throws InvalidPasswordHashException
-     * @throws StopActionException
-     * @throws UnsupportedRequestTypeException
-     */
-    public function validatePasswordAction(string $userPassword, string $linkHash)
-    {
-        $typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
-        $password = $this->makePassword($userPassword, $typo3Key, $linkHash);
-        $indexHash = $this->makeIndexHash($userPassword, $typo3Key, $linkHash);
-
-        $secret = $this->secretRepository->findOneByIndexHash($indexHash);
-
     }
 
     public function inputPasswordAction(string $linkHash)
