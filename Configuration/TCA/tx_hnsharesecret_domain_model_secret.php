@@ -15,22 +15,12 @@ return [
             ],
         ],
 
-        'password_hash' => [
-            'label' => 'Password',
+        'index_hash' => [
+            'label' => 'Index hash',
             'exclude' => true,
             'config' => [
-                'type' => 'input',
+                'type' => 'passthrough',
                 'size' => 50,
-                'eval' => 'password,saltedPassword,required',
-            ],
-        ],
-
-        'link_hash' => [
-            'label' => 'Link hash',
-            'config' => [
-                'type' => 'input',
-                'size' => 50,
-                'eval' => 'required',
             ],
         ],
 

@@ -21,12 +21,7 @@ class Secret extends AbstractEntity
     /**
      * @var string
      */
-    protected $passwordHash;
-
-    /**
-     * @var string
-     */
-    protected $linkHash;
+    protected $indexHash;
 
     /**
      * @var int, the number of failed password inputs.
@@ -38,20 +33,17 @@ class Secret extends AbstractEntity
      */
     protected $lastAttempt;
 
-
     /**
      * Secret constructor.
      * @param string $message , A plaintext message.
      * @param string $plainPassword , the plaintext password to encrypt the message.
-     * @throws InvalidPasswordHashException
      * @throws EnvironmentIsBrokenException
      */
-    public function __construct(string $message, string $plainPassword)
+    public function __construct(string $message, $plainPassword)
     {
         $this->setMessage($this->encryptMessage($message, $plainPassword));
-        $this->setPasswordHash($this->generatePasswordHash($plainPassword));
-        $this->setLinkHash($this->generateLinkHash());
         $this->attempt = 0;
+        $this->lastAttempt = 0;
     }
 
     /**
@@ -73,33 +65,17 @@ class Secret extends AbstractEntity
     /**
      * @return string
      */
-    public function getPasswordHash(): string
+    public function getIndexHash(): string
     {
-        return $this->passwordHash;
+        return $this->indexHash;
     }
 
     /**
-     * @param string $passwordHash
+     * @param string $indexHash
      */
-    public function setPasswordHash(string $passwordHash): void
+    public function setIndexHash(string $indexHash): void
     {
-        $this->passwordHash = $passwordHash;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLinkHash(): string
-    {
-        return $this->linkHash;
-    }
-
-    /**
-     * @param string $linkHash
-     */
-    public function setLinkHash(string $linkHash): void
-    {
-        $this->linkHash = $linkHash;
+        $this->indexHash = $indexHash;
     }
 
     /**
@@ -144,7 +120,7 @@ class Secret extends AbstractEntity
      * @return string
      * @throws InvalidPasswordHashException
      */
-    public function generatePasswordHash(string $plainPassword): string
+    public function generateIndexHash(string $plainPassword): string
     {
         $hashInstance = GeneralUtility::makeInstance(PasswordHashFactory::class)
             ->getDefaultHashInstance('FE');
@@ -152,11 +128,13 @@ class Secret extends AbstractEntity
         return $hashInstance->getHashedPassword($plainPassword);
     }
 
-    public function generateLinkHash(): string
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public static function generateLinkHash(): string
     {
-        $string = $this->message
-            . $this->passwordHash
-            . strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
+        $string = strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
 
         return hash('sha512', $string);
     }
@@ -164,13 +142,12 @@ class Secret extends AbstractEntity
     /**
      * @param string $plainPassword
      * @return bool
-     * @throws InvalidPasswordHashException
+     * @throws EnvironmentIsBrokenException
+     * @throws WrongKeyOrModifiedCiphertextException
      */
     public function validatePassword(string $plainPassword): bool
     {
-        return GeneralUtility::makeInstance(PasswordHashFactory::class)
-            ->get($this->passwordHash, 'FE')
-            ->checkPassword($plainPassword, $this->passwordHash);
+        return Crypto::decryptWithPassword($this->message, $plainPassword);
     }
 
     /**
