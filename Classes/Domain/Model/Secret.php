@@ -38,10 +38,12 @@ class Secret extends AbstractEntity
      * @param string $message , A plaintext message.
      * @param string $plainPassword , the plaintext password to encrypt the message.
      * @throws EnvironmentIsBrokenException
+     * TODO: linkHash im Konstruktor hinzufügen.
+     * TODO: Setter löschen.
      */
     public function __construct(string $message, $plainPassword)
     {
-        $this->setMessage($this->encryptMessage($message, $plainPassword));
+        $this->message = $this->encryptMessage($message, $plainPassword);
         $this->attempt = 0;
         $this->lastAttempt = 0;
     }
@@ -155,6 +157,7 @@ class Secret extends AbstractEntity
      * @param string $plainPassword
      * @return string
      * @throws EnvironmentIsBrokenException
+     * TODO: make private
      */
     public function encryptMessage(string $message, string $plainPassword)
     {

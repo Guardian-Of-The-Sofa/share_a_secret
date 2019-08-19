@@ -29,7 +29,6 @@ return [
             'config' => [
                 'type' => 'passthrough',
                 'default' => 0,
-
             ]
         ],
 
@@ -38,7 +37,6 @@ return [
             'config' => [
                 'type' => 'passthrough',
                 'default' => 0,
-
             ],
         ]
     ],

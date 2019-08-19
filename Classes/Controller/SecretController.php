@@ -83,9 +83,6 @@ class SecretController extends ActionController
     public function showLinkAction(string $linkHash)
     {
         $this->view->assign('linkHash', $linkHash);
-        $host = GeneralUtility::getIndpEnv('TYPO3_REQUEST_HOST');
-        $this->view->assign('host', $host);
-        $this->view->assign('linkHash', $linkHash);
     }
 
     public function inputPasswordAction(string $linkHash)
@@ -93,14 +90,12 @@ class SecretController extends ActionController
         $this->view->assign('linkHash', $linkHash);
     }
 
-    public function delay(Secret &$secret)
+    /**
+     * @throws \Exception
+     */
+    public function delay()
     {
-        $diffTime = (new \DateTime())->getTimestamp() - $secret->getLastAttempt();
-        if ($diffTime < 5) {
-            sleep(1.5 ** $secret->getAttempt());
-        } else {
-            $secret->setAttempt(0);
-        }
+        sleep(3 + random_int(0, 2));
     }
 
     /**
@@ -144,28 +139,21 @@ class SecretController extends ActionController
         $typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         $indexHash = $this->makeIndexHash($userPassword, $typo3Key, $linkHash);
         $password = $this->makePassword($userPassword, $typo3Key, $linkHash);
-        $secret = $this->secretRepository->findOneByIndexHash($indexHash);
 
+        $secret = $this->secretRepository->findOneByIndexHash($indexHash);
         if ($secret) {
             try {
                 $message = $secret->getDecryptedMessage($password);
-
                 $this->view->assign('message', $message);
                 $this->view->render();
             } catch (WrongKeyOrModifiedCiphertextException $e) {
-                $this->delay($secret);
-                $attempt = $secret->getAttempt();
-                $secret->setAttempt(++$attempt);
-                $secret->updateLastAttempt();
-                $this->secretRepository->update($secret);
-                $this->objectManager->get(PersistenceManager::class)->persistAll();
-
+                $this->delay();
                 $this->redirect('inputPassword', null, null, [
                     'linkHash' => $linkHash,
                 ]);
             }
         } else {
-            sleep(5 + random_int(-2, 7));
+            $this->delay();
             $this->redirect('inputPassword', null, null, [
                 'linkHash' => $linkHash,
             ]);
