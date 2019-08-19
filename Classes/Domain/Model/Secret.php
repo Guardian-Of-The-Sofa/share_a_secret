@@ -29,8 +29,8 @@ class Secret extends AbstractEntity
      * @param string $message , A plaintext message.
      * @param string $plainPassword , the plaintext password to encrypt the message.
      * @throws EnvironmentIsBrokenException
+     * TODO: Refactor machen, dann nächstes Todo.
      * TODO: linkHash im Konstruktor hinzufügen.
-     * TODO: Setter löschen.
      */
     public function __construct(string $message, $plainPassword)
     {
@@ -43,14 +43,6 @@ class Secret extends AbstractEntity
     public function getMessage(): string
     {
         return $this->message;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function setMessage(string $message): void
-    {
-        $this->message = $message;
     }
 
     /**
@@ -67,19 +59,6 @@ class Secret extends AbstractEntity
     public function setIndexHash(string $indexHash): void
     {
         $this->indexHash = $indexHash;
-    }
-
-    /**
-     * @param string $plainPassword
-     * @return string
-     * @throws InvalidPasswordHashException
-     */
-    public function generateIndexHash(string $plainPassword): string
-    {
-        $hashInstance = GeneralUtility::makeInstance(PasswordHashFactory::class)
-            ->getDefaultHashInstance('FE');
-
-        return $hashInstance->getHashedPassword($plainPassword);
     }
 
     /**
@@ -109,9 +88,8 @@ class Secret extends AbstractEntity
      * @param string $plainPassword
      * @return string
      * @throws EnvironmentIsBrokenException
-     * TODO: make private
      */
-    public function encryptMessage(string $message, string $plainPassword)
+    private function encryptMessage(string $message, string $plainPassword)
     {
         $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
 
