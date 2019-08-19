@@ -5,6 +5,7 @@ namespace Hn\HnShareSecret\Domain\Model;
 use DateTime;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
+use Exception;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\InvalidPasswordHashException;
 use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,16 +25,6 @@ class Secret extends AbstractEntity
     protected $indexHash;
 
     /**
-     * @var int, the number of failed password inputs.
-     */
-    protected $attempt;
-
-    /**
-     * @var int, the unix time of the last failed password input.
-     */
-    protected $lastAttempt;
-
-    /**
      * Secret constructor.
      * @param string $message , A plaintext message.
      * @param string $plainPassword , the plaintext password to encrypt the message.
@@ -44,8 +35,6 @@ class Secret extends AbstractEntity
     public function __construct(string $message, $plainPassword)
     {
         $this->message = $this->encryptMessage($message, $plainPassword);
-        $this->attempt = 0;
-        $this->lastAttempt = 0;
     }
 
     /**
@@ -81,43 +70,6 @@ class Secret extends AbstractEntity
     }
 
     /**
-     * @return int
-     */
-    public function getAttempt(): ?int
-    {
-        return $this->attempt;
-    }
-
-    /**
-     * @param int $attempt
-     */
-    public function setAttempt(int $attempt): void
-    {
-        $this->attempt = $attempt;
-    }
-
-    /**
-     * @return int
-     */
-    public function getLastAttempt(): ?int
-    {
-        return $this->lastAttempt;
-    }
-
-    /**
-     * @param int $lastAttempt
-     */
-    public function setLastAttempt(int $lastAttempt): void
-    {
-        $this->lastAttempt = $lastAttempt;
-    }
-
-    public function updateLastAttempt()
-    {
-        $this->lastAttempt = (new DateTime())->getTimestamp();
-    }
-
-    /**
      * @param string $plainPassword
      * @return string
      * @throws InvalidPasswordHashException
@@ -132,7 +84,7 @@ class Secret extends AbstractEntity
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public static function generateLinkHash(): string
     {
