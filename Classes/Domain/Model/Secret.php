@@ -62,19 +62,6 @@ class Secret extends AbstractEntity
     }
 
     /**
-     * @param string $plainPassword
-     * @return string
-     * @throws InvalidPasswordHashException
-     */
-    public function generateIndexHash(string $plainPassword): string
-    {
-        $hashInstance = GeneralUtility::makeInstance(PasswordHashFactory::class)
-            ->getDefaultHashInstance('FE');
-
-        return $hashInstance->getHashedPassword($plainPassword);
-    }
-
-    /**
      * @return string
      * @throws Exception
      */
