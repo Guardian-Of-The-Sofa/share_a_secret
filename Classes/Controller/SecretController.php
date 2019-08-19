@@ -5,17 +5,13 @@ namespace Hn\HnShareSecret\Controller;
 
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
+use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
-use TYPO3\CMS\Core\Crypto\PasswordHashing\InvalidPasswordHashException;
-use TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashFactory;
-use TYPO3\CMS\Core\Log\Logger;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
-use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 /**
@@ -23,18 +19,10 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
  */
 class SecretController extends ActionController
 {
-
     /**
      * @var SecretRepository
      */
     private $secretRepository;
-
-    public static function mylog(string $str)
-    {
-        $fH = fopen('mylog.txt', 'a');
-        fwrite($fH, $str . "\n");
-        fclose($fH);
-    }
 
     /**
      * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
@@ -61,7 +49,7 @@ class SecretController extends ActionController
      * @throws IllegalObjectTypeException
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
-     * @throws \Exception
+     * @throws Exception
      */
     public function createAction(string $message, string $userPassword)
     {
@@ -91,7 +79,7 @@ class SecretController extends ActionController
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function delay()
     {
@@ -113,8 +101,7 @@ class SecretController extends ActionController
      * @param string $userPassword
      * @param string $typo3Key
      * @param string $linkHash
-     * @return string|\TYPO3\CMS\Core\Crypto\PasswordHashing\PasswordHashInterface
-     * @throws InvalidPasswordHashException
+     * @return string
      */
     public function makeIndexHash(string $userPassword, string $typo3Key, string $linkHash)
     {
@@ -126,12 +113,9 @@ class SecretController extends ActionController
      * @param string $linkHash
      * @param string $userPassword
      * @throws EnvironmentIsBrokenException
-     * @throws IllegalObjectTypeException
-     * @throws InvalidPasswordHashException
      * @throws StopActionException
-     * @throws UnknownObjectException
      * @throws UnsupportedRequestTypeException
-     * @throws \Exception
+     * @throws Exception
      */
     public function showAction(string $linkHash, string $userPassword)
     {
