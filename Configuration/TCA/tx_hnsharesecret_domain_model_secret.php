@@ -11,7 +11,7 @@ return [
             'label' => 'Message',
             'config' => [
                 'type' => 'text',
-                'eval' => 'trim,required',
+                'readOnly' => 'true',
             ],
         ],
 
@@ -19,29 +19,13 @@ return [
             'label' => 'Index hash',
             'exclude' => true,
             'config' => [
-                'type' => 'passthrough',
-                'size' => 50,
+                'type' => 'text',
+                'readOnly' => 'true',
             ],
         ],
-
-        'attempt' => [
-            'label' => 'Attempt',
-            'config' => [
-                'type' => 'passthrough',
-                'default' => 0,
-            ]
-        ],
-
-        'last_attempt' => [
-            'label' => 'Last attempt',
-            'config' => [
-                'type' => 'passthrough',
-                'default' => 0,
-            ],
-        ]
     ],
 
     'types' => [
-        '0' => ['showitem' => 'message,password_hash,link_hash'],
+        '0' => ['showitem' => 'message,index_hash'],
     ],
 ];
