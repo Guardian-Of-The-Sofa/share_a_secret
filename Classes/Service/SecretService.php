@@ -3,6 +3,9 @@
 namespace Hn\HnShareSecret\Service;
 
 use DateTime;
+use Defuse\Crypto\Crypto;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
+use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
@@ -98,5 +101,20 @@ class SecretService
         $string = strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
 
         return hash('sha512', $string);
+    }
+
+    /**
+     * @param Secret $secret
+     * @param string $userPassword
+     * @param string $linkHash
+     * @return string
+     * @throws EnvironmentIsBrokenException
+     * @throws WrongKeyOrModifiedCiphertextException
+     */
+    public function getDecryptedMessage(Secret $secret, string $userPassword, string $linkHash): string
+    {
+        $password = $this->createPassword($userPassword, $linkHash);
+        $decryptedMessage = Crypto::decryptWithPassword($secret->getMessage(), $password);
+        return $decryptedMessage;
     }
 }

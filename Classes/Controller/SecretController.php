@@ -50,6 +50,7 @@ class SecretController extends ActionController
      */
     public function createAction(string $message, string $userPassword)
     {
+        //TODO: unschön?
         $linkHash = $this->secretService->createSecret($message, $userPassword);
         $this->redirect('showLink', null, null, ['linkHash' => $linkHash]);
     }
@@ -77,6 +78,19 @@ class SecretController extends ActionController
 
     /**
      * @param string $linkHash
+     * @throws StopActionException
+     * @throws UnsupportedRequestTypeException
+     */
+    public function redirectToInputPassword(string $linkHash): void
+    {
+        sleep(3 + random_int(0, 2));
+        $this->redirect('inputPassword', null, null, [
+            'linkHash' => $linkHash,
+        ]);
+    }
+
+    /**
+     * @param string $linkHash
      * @param string $userPassword
      * @throws EnvironmentIsBrokenException
      * @throws StopActionException
@@ -85,25 +99,16 @@ class SecretController extends ActionController
      */
     public function showAction(string $linkHash, string $userPassword)
     {
-        $password = $this->secretService->createPassword($userPassword, $linkHash);
-
-        $secret = $this->secretService->getSecret($userPassword, $linkHash);//$this->secretRepository->findOneByIndexHash($indexHash);
+        $secret = $this->secretService->getSecret($userPassword, $linkHash);
         if (!$secret) {
-            $this->delay();
-            $this->redirect('inputPassword', null, null, [
-                'linkHash' => $linkHash,
-            ]);
+            $this->redirectToInputPassword($linkHash);
         }
 
         try {
-            //TODO: Aufgabe des SecretService?
-            $message = $secret->getDecryptedMessage($password);
+            $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
             $this->view->assign('message', $message);
         } catch (WrongKeyOrModifiedCiphertextException $e) {
-            $this->delay();
-            $this->redirect('inputPassword', null, null, [
-                'linkHash' => $linkHash,
-            ]);
+            $this->redirectToInputPassword($linkHash);
         }
     }
 }
