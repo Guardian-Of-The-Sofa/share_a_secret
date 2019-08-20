@@ -99,6 +99,7 @@ class SecretController extends ActionController
         }
 
         try {
+            //TODO: Aufgabe des SecretService?
             $message = $secret->getDecryptedMessage($password);
             $this->view->assign('message', $message);
         } catch (WrongKeyOrModifiedCiphertextException $e) {
