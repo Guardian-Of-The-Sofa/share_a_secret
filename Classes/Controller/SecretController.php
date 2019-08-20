@@ -6,13 +6,15 @@ namespace Hn\HnShareSecret\Controller;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
-use Hn\HnShareSecret\Domain\Model\Secret;
-use Hn\HnShareSecret\Domain\Repository\SecretRepository;
+use Hn\HnShareSecret\Service\SecretService;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
-use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
+
+//TODO: sortiere methoden nach public private....
 
 /**
  * Class SecretController
@@ -20,16 +22,16 @@ use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 class SecretController extends ActionController
 {
     /**
-     * @var SecretRepository
+     * @var SecretService
      */
-    private $secretRepository;
+    private $secretService;
 
     /**
-     * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
+     * SecretController constructor.
      */
-    public function injectRepository(SecretRepository $secretRepository)
+    public function __construct()
     {
-        $this->secretRepository = $secretRepository;
+        $this->secretService = new SecretService();
     }
 
     public function indexAction()
@@ -45,23 +47,13 @@ class SecretController extends ActionController
     /**
      * @param string $message
      * @param string $userPassword
-     * @throws EnvironmentIsBrokenException
-     * @throws IllegalObjectTypeException
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
      * @throws Exception
      */
     public function createAction(string $message, string $userPassword)
     {
-        $typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
-        $linkHash = Secret::generateLinkHash();
-        $password = $this->makePassword($userPassword, $typo3Key, $linkHash);
-        $indexHash = $this->makeIndexHash($userPassword, $typo3Key, $linkHash);
-        $secret = new Secret($message, $password);
-        $secret->setIndexHash($indexHash);
-        $this->secretRepository->add($secret);
-        $this->objectManager->get(PersistenceManager::class)->persistAll();
-
+        $linkHash = $this->secretService->createSecret($message, $userPassword);
         $this->redirect('showLink', null, null, ['linkHash' => $linkHash]);
     }
 
@@ -81,32 +73,9 @@ class SecretController extends ActionController
     /**
      * @throws Exception
      */
-    public function delay()
+    private function delay()
     {
         sleep(3 + random_int(0, 2));
-    }
-
-    /**
-     * @param string $userPassword
-     * @param string $typo3Key
-     * @param string $linkHash
-     * @return string
-     */
-    public function makePassword(string $userPassword, string $typo3Key, string $linkHash): string
-    {
-        return $userPassword . $typo3Key . $linkHash;
-    }
-
-    /**
-     * @param string $userPassword
-     * @param string $typo3Key
-     * @param string $linkHash
-     * @return string
-     */
-    public function makeIndexHash(string $userPassword, string $typo3Key, string $linkHash)
-    {
-        $password = $this->makePassword($userPassword, $typo3Key, $linkHash);
-        return hash('sha512', $password);
     }
 
     /**
@@ -119,24 +88,20 @@ class SecretController extends ActionController
      */
     public function showAction(string $linkHash, string $userPassword)
     {
-        $this->request->getArgument('linkHash');
-        $typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
-        $indexHash = $this->makeIndexHash($userPassword, $typo3Key, $linkHash);
-        $password = $this->makePassword($userPassword, $typo3Key, $linkHash);
+        $password = $this->secretService->createPassword($userPassword, $linkHash);
 
-        $secret = $this->secretRepository->findOneByIndexHash($indexHash);
-        if ($secret) {
-            try {
-                $message = $secret->getDecryptedMessage($password);
-                $this->view->assign('message', $message);
-                $this->view->render();
-            } catch (WrongKeyOrModifiedCiphertextException $e) {
-                $this->delay();
-                $this->redirect('inputPassword', null, null, [
-                    'linkHash' => $linkHash,
-                ]);
-            }
-        } else {
+        $secret = $this->secretService->getSecret($userPassword, $linkHash);//$this->secretRepository->findOneByIndexHash($indexHash);
+        if (!$secret) {
+            $this->delay();
+            $this->redirect('inputPassword', null, null, [
+                'linkHash' => $linkHash,
+            ]);
+        }
+
+        try {
+            $message = $secret->getDecryptedMessage($password);
+            $this->view->assign('message', $message);
+        } catch (WrongKeyOrModifiedCiphertextException $e) {
             $this->delay();
             $this->redirect('inputPassword', null, null, [
                 'linkHash' => $linkHash,

@@ -12,5 +12,8 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class SecretRepository extends Repository
 {
-
+    public function __construct(\TYPO3\CMS\Extbase\Object\ObjectManagerInterface $objectManager)
+    {
+        parent::__construct($objectManager);
+    }
 }
