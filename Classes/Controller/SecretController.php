@@ -51,7 +51,6 @@ class SecretController extends ActionController
      */
     public function createAction(string $message, string $userPassword)
     {
-        //TODO: unschön?
         $linkHash = $this->secretService->createSecret($message, $userPassword);
         $this->redirect('showLink', null, null, ['linkHash' => $linkHash]);
     }
@@ -67,14 +66,6 @@ class SecretController extends ActionController
     public function inputPasswordAction(string $linkHash)
     {
         $this->view->assign('linkHash', $linkHash);
-    }
-
-    /**
-     * @throws Exception
-     */
-    private function delay()
-    {
-        sleep(3 + random_int(0, 2));
     }
 
     /**

@@ -9,7 +9,6 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
-use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 class SecretService
 {
@@ -18,14 +17,6 @@ class SecretService
      */
     private $secretRepository;
     private $typo3Key;
-
-//    /**
-//     * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
-//     */
-//    public function injectRepository(SecretRepository $secretRepository)
-//    {
-//        $this->secretRepository = $secretRepository;
-//    }
 
     /**
      * SecretService constructor.
