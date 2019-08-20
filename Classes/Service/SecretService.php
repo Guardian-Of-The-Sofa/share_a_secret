@@ -9,8 +9,6 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 
 class SecretService
@@ -19,7 +17,6 @@ class SecretService
      * @var SecretRepository;
      */
     private $secretRepository;
-    private $objectManager;
     private $typo3Key;
 
 //    /**
@@ -32,13 +29,12 @@ class SecretService
 
     /**
      * SecretService constructor.
+     * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
      */
-    public function __construct()
+    public function __construct(\Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository)
     {
         $this->typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
-        //TODO: Frag Florian warum GeneralUtility... nötig ist.
-        $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
-        $this->secretRepository = $this->objectManager->get(SecretRepository::class);
+        $this->secretRepository = $secretRepository;
     }
 
     /**
@@ -76,7 +72,7 @@ class SecretService
         $indexHash = $this->createIndexHash($userPassword, $linkHash);
         $secret->setIndexHash($indexHash);
         $this->secretRepository->add($secret);
-        $this->objectManager->get(PersistenceManager::class)->persistAll();
+        $this->secretRepository->save();
         return $linkHash;
     }
 

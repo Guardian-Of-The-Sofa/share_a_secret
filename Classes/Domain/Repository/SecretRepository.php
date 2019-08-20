@@ -12,4 +12,8 @@ use TYPO3\CMS\Extbase\Persistence\Repository;
  */
 class SecretRepository extends Repository
 {
+    public function save()
+    {
+        $this->persistenceManager->persistAll();
+    }
 }

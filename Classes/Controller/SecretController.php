@@ -25,10 +25,11 @@ class SecretController extends ActionController
 
     /**
      * SecretController constructor.
+     * @param \Hn\HnShareSecret\Service\SecretService $secretService
      */
-    public function __construct()
+    public function __construct(\Hn\HnShareSecret\Service\SecretService $secretService)
     {
-        $this->secretService = new SecretService();
+        $this->secretService = $secretService;
     }
 
     public function indexAction()
@@ -80,6 +81,7 @@ class SecretController extends ActionController
      * @param string $linkHash
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
+     * @throws Exception
      */
     public function redirectToInputPassword(string $linkHash): void
     {
