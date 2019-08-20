@@ -15,7 +15,7 @@ use Defuse\Crypto\Crypto;
 class Secret extends AbstractEntity
 {
     /**
-     * @var string
+     * @var string, an encrypted message.
      */
     protected $message;
 
@@ -26,14 +26,12 @@ class Secret extends AbstractEntity
 
     /**
      * Secret constructor.
-     * @param string $message , A plaintext message.
-     * @param string $plainPassword , the plaintext password to encrypt the message.
+     * @param string $encMessage
      * @param $indexHash
-     * @throws EnvironmentIsBrokenException
      */
-    public function __construct(string $message, $plainPassword, $indexHash)
+    public function __construct(string $encMessage, $indexHash)
     {
-        $this->message = $this->encryptMessage($message, $plainPassword);
+        $this->message = $encMessage;
         $this->indexHash = $indexHash;
     }
 
@@ -51,18 +49,5 @@ class Secret extends AbstractEntity
     public function getIndexHash(): string
     {
         return $this->indexHash;
-    }
-
-    /**
-     * @param string $message
-     * @param string $plainPassword
-     * @return string
-     * @throws EnvironmentIsBrokenException
-     */
-    private function encryptMessage(string $message, string $plainPassword)
-    {
-        $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
-
-        return $encryptedMessage;
     }
 }

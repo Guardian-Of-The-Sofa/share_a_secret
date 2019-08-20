@@ -69,7 +69,8 @@ class SecretService
         $linkHash = $this->generateLinkHash();
         $password = $this->createPassword($userPassword, $linkHash);
         $indexHash = $this->createIndexHash($userPassword, $linkHash);
-        $secret = new Secret($message, $password, $indexHash);
+        $encMessage = $this->encryptMessage($message, $password);
+        $secret = new Secret($encMessage, $indexHash);
         $this->secretRepository->add($secret);
         $this->secretRepository->save();
         return $linkHash;
@@ -111,5 +112,18 @@ class SecretService
         $password = $this->createPassword($userPassword, $linkHash);
         $decryptedMessage = Crypto::decryptWithPassword($secret->getMessage(), $password);
         return $decryptedMessage;
+    }
+
+    /**
+     * @param string $message
+     * @param string $plainPassword
+     * @return string
+     * @throws EnvironmentIsBrokenException
+     */
+    private function encryptMessage(string $message, string $plainPassword)
+    {
+        $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
+
+        return $encryptedMessage;
     }
 }
