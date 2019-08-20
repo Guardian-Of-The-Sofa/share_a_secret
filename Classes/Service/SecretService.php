@@ -68,9 +68,8 @@ class SecretService
     {
         $linkHash = $this->generateLinkHash();
         $password = $this->createPassword($userPassword, $linkHash);
-        $secret = new Secret($message, $password);
         $indexHash = $this->createIndexHash($userPassword, $linkHash);
-        $secret->setIndexHash($indexHash);
+        $secret = new Secret($message, $password, $indexHash);
         $this->secretRepository->add($secret);
         $this->secretRepository->save();
         return $linkHash;
