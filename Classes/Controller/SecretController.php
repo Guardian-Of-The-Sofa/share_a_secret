@@ -32,11 +32,6 @@ class SecretController extends ActionController
         $this->secretService = $secretService;
     }
 
-    public function indexAction()
-    {
-
-    }
-
     public function newAction()
     {
 
