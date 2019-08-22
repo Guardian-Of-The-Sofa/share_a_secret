@@ -9,6 +9,7 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
+use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 
 class SecretService
 {
@@ -32,9 +33,13 @@ class SecretService
      * @param string $userPassword
      * @param string $linkHash
      * @return string
+     * @throws InvalidArgumentValueException
      */
     public function createPassword(string $userPassword, string $linkHash): string
     {
+        if (!($userPassword && $linkHash)){
+            throw new InvalidArgumentValueException();
+        }
         return $userPassword . $this->typo3Key . $linkHash;
     }
 
@@ -42,6 +47,7 @@ class SecretService
      * @param string $userPassword
      * @param string $linkHash
      * @return string
+     * @throws InvalidArgumentValueException
      */
     public function createIndexHash(string $userPassword, string $linkHash)
     {

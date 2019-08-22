@@ -3,6 +3,7 @@
 namespace Hn\HnShareSecret\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 
 class Secret extends AbstractEntity
 {
@@ -23,6 +24,10 @@ class Secret extends AbstractEntity
      */
     public function __construct(string $encMessage, $indexHash)
     {
+        if (! ($encMessage && $indexHash)){
+            throw new InvalidArgumentValueException();
+        }
+
         $this->message = $encMessage;
         $this->indexHash = $indexHash;
     }
