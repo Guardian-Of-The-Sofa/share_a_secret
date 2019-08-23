@@ -15,16 +15,23 @@ class SecretRepositoryTest extends FunctionalTestCase
     ];
 
     private $objectManager;
-    /**
-     * @var SecretRepository
-     */
+
+    /* @var SecretRepository */
     private $secretRepository;
+
+    /* @var Secret[] */
+    private $secrets;
 
     public function setUp()
     {
         parent::setUp();
         $this->objectManager = GeneralUtility::makeInstance(ObjectManager::class);
         $this->secretRepository = $this->objectManager->get(SecretRepository::class);
+        $this->secrets = [
+            new Secret('a', 'a'),
+            new Secret('b', 'b'),
+            new Secret('c', 'c'),
+        ];
     }
 
     public function testSave()
@@ -35,21 +42,28 @@ class SecretRepositoryTest extends FunctionalTestCase
         $this->assertNotEquals(0, $this->secretRepository->countAll());
     }
 
-    public function testFindOneByIndexHash()
+    /**
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @test
+     */
+    public function saveMultiple()
     {
-        /** @var Secret[] $secrets */
-        $secrets = [
-            new Secret('a', 'a'),
-            new Secret('b', 'b'),
-            new Secret('c', 'c'),
-        ];
-
-        foreach ($secrets as $secret){
+        foreach ($this->secrets as $secret){
             $this->secretRepository->add($secret);
             $this->secretRepository->save();
         }
+        $this->assertEquals(count($this->secrets), $this->secretRepository->countAll());
 
-        foreach ($secrets as $secret){
+    }
+
+    public function testFindOneByIndexHash()
+    {
+        foreach ($this->secrets as $secret) {
+            $this->secretRepository->add($secret);
+        }
+        $this->secretRepository->save();
+
+        foreach ($this->secrets as $secret) {
             $foundSecret = $this->secretRepository->findOneByIndexHash($secret->getIndexHash());
             $this->assertSame($secret, $foundSecret);
         }
