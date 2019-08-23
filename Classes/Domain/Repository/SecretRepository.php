@@ -16,10 +16,15 @@ class SecretRepository extends Repository
         $this->persistenceManager->persistAll();
     }
 
+    /**
+     * @param string $hash
+     * @return Secret|null
+     */
     public function findOneByIndexHash(string $hash): ?Secret
     {
         $query = $this->createQuery();
         $query->matching($query->equals('indexHash', $hash));
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $query->execute()->getFirst();
     }
 }

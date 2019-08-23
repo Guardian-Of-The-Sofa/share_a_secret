@@ -1,6 +1,5 @@
 <?php
 
-
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Hn\HnShareSecret\Domain\Model\Secret;
@@ -8,9 +7,6 @@ use Hn\HnShareSecret\Domain\Repository\SecretRepository;
 use Hn\HnShareSecret\Service\SecretService;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
-
-/* @var Secret $entity */
-$entity = null;
 
 class SecretServiceTest extends TestCase
 {
@@ -22,6 +18,9 @@ class SecretServiceTest extends TestCase
 
     /* @var callable */
     protected $secretRepositoryAddCallback;
+
+    /* @var Secret[] */
+    protected $secrets = [];
 
     public function dummyValuesProvider()
     {
@@ -36,11 +35,18 @@ class SecretServiceTest extends TestCase
     {
         $this->secretRepository = $this->createMock(SecretRepository::class);
         $this->secretService = new SecretService($this->secretRepository);
-        global $entity;
-        $this->secretRepositoryAddCallback = function($secret) use (&$entity){
-            $this->assertInstanceOf(Secret::class, $secret);
-            $entity = $secret;
-        };
+
+        $this->secretRepository
+            ->method('add')
+            ->willReturnCallback(function (Secret $secret) {
+                $this->secrets[$secret->getIndexHash()] = $secret;
+            });
+
+        $this->secretRepository
+            ->method('findOneByIndexHash')
+            ->willReturnCallback(function ($indexHash) {
+                return $this->secrets[$indexHash] ?? null;
+            });
     }
 
     /**
@@ -75,52 +81,28 @@ class SecretServiceTest extends TestCase
      * @throws Exception
      * @test
      */
-    public function messagesCanBeDecrypted()
+    public function messageCanBeDecrypted()
     {
         $message = 'Hello World!';
         $userPassword = 'CorrectHorseBatteryStaple';
-
-        /** @var Secret $entity */
-        $entity = null;
-        $this->secretRepository->expects($this->once())
-            ->method('add')
-            ->willReturnCallback(function ($parameter) use (&$entity) {
-                $this->assertInstanceOf(Secret::class, $parameter);
-                $entity = $parameter;
-            });
         $this->secretRepository->expects($this->once())->method('save');
-
         $linkHash = $this->secretService->createSecret($message, $userPassword);
-
-        $this->secretRepository->expects($this->once())
-            ->method('findOneByIndexHash')
-            ->with($entity->getIndexHash())
-            ->willReturn($entity);
-
+        $this->assertCount(1, $this->secrets);
         $secret = $this->secretService->getSecret($userPassword, $linkHash);
         $this->assertEquals($message, $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash));
     }
 
     /**
-     * TODO: Test ist unschön, besser machen.
-     * TODO: Test enthält doppelten Code. Hier sehe ich keine Lösung,
-     *       da anonyme Funktionen weder Superglobals, noch $this, noch ein self vom Eltern-Scope erben dürfen.
      * @throws Exception
      * @test
+     * TODO: Test vielleicht unschön?
      */
     public function messageGetsEncrypted()
     {
         $message = 'Hello World!';
         $userPassword = 'CorrectHorseBatteryStaple';
-        /* @var Secret $entity */
-        $entity = null;
-        $this->secretRepository->expects($this->once())
-            ->method('add')
-            ->willReturnCallback(function ($secret) use (&$entity) {
-                $this->assertInstanceOf(Secret::class, $secret);
-                $entity = $secret;
-            });
-        $this->secretService->createSecret($message, $userPassword);
-        $this->assertNotEquals($message, $entity->getMessage());
+        $linkHash = $this->secretService->createSecret($message, $userPassword);
+        $secret = $this->secretService->getSecret($userPassword, $linkHash);
+        $this->assertNotEquals($message, $secret->getMessage());
     }
 }
