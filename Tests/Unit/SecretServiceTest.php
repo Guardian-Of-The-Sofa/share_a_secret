@@ -105,4 +105,93 @@ class SecretServiceTest extends TestCase
         $secret = $this->secretService->getSecret($userPassword, $linkHash);
         $this->assertNotEquals($message, $secret->getMessage());
     }
+
+    public function invalidNumOfCharValuesProvider()
+    {
+        return [
+            [-10], [-5], [0], [1], [2],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidNumOfCharValuesProvider
+     * @test
+     * @param int $numOfChars
+     * @throws Exception
+     */
+    public function invalidNumOfCharsThrowsException(int $numOfChars)
+    {
+        $this->expectException(RangeException::class);
+        $this->secretService->generateUserPassword($numOfChars);
+    }
+
+    /**
+     * @test
+     * @throws Exception
+     */
+    public function userPasswordGeneratorGeneratesExactlyNchars()
+    {
+        //TODO: Unschön?
+        for ($n = 4; $n < 100; $n++) {
+            $userPassword = $this->secretService->generateUserPassword($n);
+            $this->assertEquals($n, strlen($userPassword));
+        }
+    }
+
+    public function invalidUserPasswordsProvider()
+    {
+        return [
+            ['bla'],
+            ['CorrectHorseBatteryStaple'],
+            ['123'],
+            ['123#'],
+            ['asdfASDF123'],
+            ['sdf#ASDF'],
+            ['aasldkjfhsdfas97df98df79adf79f79d79a79a9df87aADFADFADF'],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidUserPasswordsProvider
+     * @test
+     * @param $userPassword
+     */
+    public function userPasswordIsValidReturnsFalseOnInvalidInput($userPassword)
+    {
+        $this->assertFalse($this->secretService->userPasswordIsValid($userPassword));
+    }
+
+    public function validUserPasswordsProvider()
+    {
+        return [
+            ['bla12G3#'],
+            ['CorrectHorseBattery1189*Staple'],
+            ['123Af+'],
+            ['123#fffA'],
+            ['asdfASDF123!'],
+            ['sdf#ASDF0'],
+            ['aasldkjfhsdfas97df98df79adf79f79d79a79a9df87aADFADFADF/'],
+        ];
+    }
+
+    /**
+     * @dataProvider validUserPasswordsProvider
+     * @test
+     * @param $userPassword
+     */
+    public function userPasswordIsValidReturnsTrueOnValidInput($userPassword)
+    {
+        $this->assertTrue($this->secretService->userPasswordIsValid($userPassword));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function generateUserPasswordReturnsValidPasswords()
+    {
+        for($i = 0; $i <= 1000000; $i++){
+            $userPassword = $this->secretService->generateUserPassword(4);
+            assertTrue($this->secretService->userPasswordIsValid($userPassword));
+        }
+    }
 }
