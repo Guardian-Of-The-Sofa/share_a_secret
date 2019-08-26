@@ -9,6 +9,7 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
+use RangeException;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 
 class SecretService
@@ -18,6 +19,25 @@ class SecretService
      */
     private $secretRepository;
     private $typo3Key;
+    private $userPasswordCharacters = [
+        'letters' => [
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        ],
+
+        'digits' => [
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        ],
+
+        'specialCharacters' => [
+            '!', '#', '$', '%', '&', '(', ')', '*', '+', ',',
+            '-', '.', '/', ':', ';', '=', '?', '@', '\\', '_', '~',
+        ],
+    ];
+
+    private $userPasswordChars;
 
     /**
      * SecretService constructor.
@@ -27,6 +47,11 @@ class SecretService
     {
         $this->typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         $this->secretRepository = $secretRepository;
+        $this->userPasswordChars = array_merge(
+            $this->userPasswordCharacters['letters'],
+            $this->userPasswordCharacters['digits'],
+            $this->userPasswordCharacters['specialCharacters']
+        );
     }
 
     /**
@@ -37,7 +62,7 @@ class SecretService
      */
     public function createPassword(string $userPassword, string $linkHash): string
     {
-        if (!($userPassword && $linkHash)){
+        if (!($userPassword && $linkHash)) {
             throw new InvalidArgumentValueException();
         }
         return $userPassword . $this->typo3Key . $linkHash;
@@ -120,7 +145,44 @@ class SecretService
     private function encryptMessage(string $message, string $plainPassword)
     {
         $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
-
         return $encryptedMessage;
+    }
+
+    public function userPasswordIsValid(string $userPassword)
+    {
+        $specialChars = implode($this->userPasswordCharacters['specialCharacters']);
+        $isValid = false;
+        if (
+            preg_match('/[A-Z]/', $userPassword) &&
+            preg_match('/[a-z]/', $userPassword) &&
+            preg_match('/[0-9]/', $userPassword) &&
+            preg_match("{[$specialChars]}", $userPassword)
+        ) {
+            $isValid = true;
+        }
+        return $isValid;
+    }
+
+    /**
+     * @param int $numOfChars , the number of characters to generate.
+     * @return string
+     * @throws Exception
+     */
+    public function generateUserPassword(int $numOfChars)
+    {
+        //TODO: Exception werfen oder $numOfChars auf Standardwert setzen?
+        if ($numOfChars < 4) {
+            throw new RangeException('$numOfChars must be at least 4, ' . $numOfChars . ' given.');
+        }
+
+        $maxIndex = count($this->userPasswordChars) - 1;
+        $userPassword = '';
+        while (!$this->userPasswordIsValid($userPassword)) {
+            $userPassword = ''; // Reset non-valid password
+            for ($i = 0; $i < $numOfChars; $i++) {
+                $userPassword .= $this->userPasswordChars[random_int(0, $maxIndex)];
+            }
+        }
+        return $userPassword;
     }
 }
