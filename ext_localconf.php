@@ -8,11 +8,9 @@ defined('TYPO3_MODE') || die('Access denied.');
     ],
     // non-cacheable actions
     [
-        'Secret' => 'create,show',
+        'Secret' => 'create,show,showLink',
     ]
 );
 
-$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = 'tx_hnsharesecret_secret[action]';
+//$GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = 'tx_hnsharesecret_secret[action]';
 $GLOBALS['TYPO3_CONF_VARS']['FE']['cacheHash']['excludedParameters'][] = 'tx_hnsharesecret_secret[linkHash]';
-
-//TODO: Route enhancers.
