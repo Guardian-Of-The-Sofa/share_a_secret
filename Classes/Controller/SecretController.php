@@ -32,7 +32,8 @@ class SecretController extends ActionController
 
     public function newAction()
     {
-
+        $userPassword = $this->secretService->generateUserPassword(8);
+        $this->view->assign('userPassword', $userPassword);
     }
 
     /**
