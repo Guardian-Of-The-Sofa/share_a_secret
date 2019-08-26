@@ -31,6 +31,8 @@ class SecretService
             '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         ],
 
+        // '{' and '}' are being used to delimit the regular
+        // expression in function userPasswordIsValid()
         'specialCharacters' => [
             '!', '#', '$', '%', '&', '(', ')', '*', '+', ',',
             '-', '.', '/', ':', ';', '=', '?', '@', '\\', '_', '~',
