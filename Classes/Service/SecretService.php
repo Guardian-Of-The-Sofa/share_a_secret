@@ -104,6 +104,7 @@ class SecretService
      * @param string $userPassword
      * @param $linkHash
      * @return Secret|null
+     * @throws InvalidArgumentValueException
      */
     public function getSecret(string $userPassword, $linkHash): ?Secret
     {
@@ -130,6 +131,7 @@ class SecretService
      * @return string
      * @throws EnvironmentIsBrokenException
      * @throws WrongKeyOrModifiedCiphertextException
+     * @throws InvalidArgumentValueException
      */
     public function getDecryptedMessage(Secret $secret, string $userPassword, string $linkHash): string
     {
@@ -168,6 +170,7 @@ class SecretService
     /**
      * @param int $numOfChars , the number of characters to generate.
      * @return string
+     * @throws RangeException, if the number of characters to generate is less than 4.
      * @throws Exception
      */
     public function generateUserPassword(int $numOfChars)

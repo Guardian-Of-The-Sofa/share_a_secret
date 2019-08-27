@@ -8,6 +8,7 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Service\SecretService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 
@@ -30,6 +31,9 @@ class SecretController extends ActionController
         $this->secretService = $secretService;
     }
 
+    /**
+     * @throws Exception
+     */
     public function newAction()
     {
         $userPassword = $this->secretService->generateUserPassword(8);
@@ -81,22 +85,17 @@ class SecretController extends ActionController
     /**
      * @param string $linkHash
      * @param string $userPassword
-     * @throws EnvironmentIsBrokenException
      * @throws StopActionException
      * @throws UnsupportedRequestTypeException
-     * @throws Exception
+     * @throws EnvironmentIsBrokenException
      */
     public function showAction(string $linkHash, string $userPassword)
     {
-        $secret = $this->secretService->getSecret($userPassword, $linkHash);
-        if (!$secret) {
-            $this->redirectToInputPassword($linkHash);
-        }
-
         try {
+            $secret = $this->secretService->getSecret($userPassword, $linkHash);
             $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
             $this->view->assign('message', $message);
-        } catch (WrongKeyOrModifiedCiphertextException $e) {
+        } catch (InvalidArgumentValueException | WrongKeyOrModifiedCiphertextException $e) {
             $this->redirectToInputPassword($linkHash);
         }
     }
