@@ -57,9 +57,10 @@ class SecretController extends ActionController
         $this->view->assign('linkHash', $linkHash);
     }
 
-    public function inputPasswordAction(string $linkHash)
+    public function inputPasswordAction(string $linkHash, bool $isInvalid = false)
     {
         $this->view->assign('linkHash', $linkHash);
+        $this->view->assign('isInvalid', $isInvalid);
     }
 
     /**
@@ -73,6 +74,7 @@ class SecretController extends ActionController
         sleep(3 + random_int(0, 2));
         $this->redirect('inputPassword', null, null, [
             'linkHash' => $linkHash,
+            'isInvalid' => true,
         ]);
     }
 
