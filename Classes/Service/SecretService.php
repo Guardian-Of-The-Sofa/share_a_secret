@@ -9,6 +9,7 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
+use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use RangeException;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 
@@ -83,13 +84,19 @@ class SecretService
     }
 
     /**
-     * @param $message
-     * @param $userPassword
+     * @param string $message
+     * @param string $userPassword
      * @return string
-     * @throws Exception
+     * @throws EnvironmentIsBrokenException
+     * @throws InvalidArgumentValueException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      */
     public function createSecret(string $message, string $userPassword): string
     {
+        if(!$message && $userPassword){
+            throw new InvalidArgumentValueException();
+        }
+
         $linkHash = $this->generateLinkHash();
         $password = $this->createPassword($userPassword, $linkHash);
         $indexHash = $this->createIndexHash($userPassword, $linkHash);
@@ -105,11 +112,15 @@ class SecretService
      * @param $linkHash
      * @return Secret|null
      * @throws InvalidArgumentValueException
+     * @throws SecretNotFoundException
      */
     public function getSecret(string $userPassword, $linkHash): ?Secret
     {
         $indexHash = $this->createIndexHash($userPassword, $linkHash);
         $secret = $this->secretRepository->findOneByIndexHash($indexHash);
+        if(!$secret){
+            throw new SecretNotFoundException();
+        }
         return $secret;
     }
 
