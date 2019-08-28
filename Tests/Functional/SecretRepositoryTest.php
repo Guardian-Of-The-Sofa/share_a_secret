@@ -39,7 +39,7 @@ class SecretRepositoryTest extends FunctionalTestCase
         $secret = new Secret('a', 'a');
         $this->secretRepository->add($secret);
         $this->secretRepository->save();
-        $this->assertNotEquals(0, $this->secretRepository->countAll());
+        $this->assertEquals(1, $this->secretRepository->countAll());
     }
 
     /**
