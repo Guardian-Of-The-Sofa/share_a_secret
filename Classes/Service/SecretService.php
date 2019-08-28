@@ -59,32 +59,6 @@ class SecretService
     }
 
     /**
-     * @param string $userPassword
-     * @param string $linkHash
-     * @return string
-     * @throws InvalidArgumentValueException
-     */
-    public function createPassword(string $userPassword, string $linkHash): string
-    {
-        if (!($userPassword && $linkHash)) {
-            throw new InvalidArgumentValueException();
-        }
-        return $userPassword . $this->typo3Key . $linkHash;
-    }
-
-    /**
-     * @param string $userPassword
-     * @param string $linkHash
-     * @return string
-     * @throws InvalidArgumentValueException
-     */
-    public function createIndexHash(string $userPassword, string $linkHash)
-    {
-        $password = $this->createPassword($userPassword, $linkHash);
-        return hash('sha512', $password);
-    }
-
-    /**
      * @param string $message
      * @param string $userPassword
      * @return string
@@ -97,7 +71,7 @@ class SecretService
     {
         $message = trim($message);
         $userPassword = trim($userPassword);
-        if(!$message && $userPassword){
+        if (!$message && $userPassword) {
             throw new InvalidArgumentValueException();
         }
 
@@ -114,29 +88,18 @@ class SecretService
     /**
      * @param string $userPassword
      * @param $linkHash
-     * @return Secret|null
+     * @return Secret
      * @throws InvalidArgumentValueException
      * @throws SecretNotFoundException
      */
-    public function getSecret(string $userPassword, $linkHash): ?Secret
+    public function getSecret(string $userPassword, $linkHash): Secret
     {
         $indexHash = $this->createIndexHash($userPassword, $linkHash);
         $secret = $this->secretRepository->findOneByIndexHash($indexHash);
-        if(!$secret){
+        if (!$secret) {
             throw new SecretNotFoundException();
         }
         return $secret;
-    }
-
-    /**
-     * @return string
-     * @throws Exception
-     */
-    private function generateLinkHash(): string
-    {
-        $string = strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
-
-        return hash('sha512', $string);
     }
 
     /**
@@ -153,33 +116,6 @@ class SecretService
         $password = $this->createPassword($userPassword, $linkHash);
         $decryptedMessage = Crypto::decryptWithPassword($secret->getMessage(), $password);
         return $decryptedMessage;
-    }
-
-    /**
-     * @param string $message
-     * @param string $plainPassword
-     * @return string
-     * @throws EnvironmentIsBrokenException
-     */
-    private function encryptMessage(string $message, string $plainPassword)
-    {
-        $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
-        return $encryptedMessage;
-    }
-
-    public function userPasswordIsValid(string $userPassword)
-    {
-        $specialChars = implode($this->userPasswordCharacters['specialCharacters']);
-        $isValid = false;
-        if (
-            preg_match('/[A-Z]/', $userPassword) &&
-            preg_match('/[a-z]/', $userPassword) &&
-            preg_match('/[0-9]/', $userPassword) &&
-            preg_match("{[$specialChars]}", $userPassword)
-        ) {
-            $isValid = true;
-        }
-        return $isValid;
     }
 
     /**
@@ -204,5 +140,69 @@ class SecretService
             }
         }
         return $userPassword;
+    }
+
+    /**
+     * @param string $userPassword
+     * @param string $linkHash
+     * @return string
+     * @throws InvalidArgumentValueException
+     */
+    private function createPassword(string $userPassword, string $linkHash): string
+    {
+        if (!($userPassword && $linkHash)) {
+            throw new InvalidArgumentValueException();
+        }
+        return $userPassword . $this->typo3Key . $linkHash;
+    }
+
+    /**
+     * @param string $userPassword
+     * @param string $linkHash
+     * @return string
+     * @throws InvalidArgumentValueException
+     */
+    private function createIndexHash(string $userPassword, string $linkHash)
+    {
+        $password = $this->createPassword($userPassword, $linkHash);
+        return hash('sha512', $password);
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function generateLinkHash(): string
+    {
+        $string = strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
+
+        return hash('sha512', $string);
+    }
+
+    /**
+     * @param string $message
+     * @param string $plainPassword
+     * @return string
+     * @throws EnvironmentIsBrokenException
+     */
+    private function encryptMessage(string $message, string $plainPassword)
+    {
+        $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
+        return $encryptedMessage;
+    }
+
+    private function userPasswordIsValid(string $userPassword)
+    {
+        $specialChars = implode($this->userPasswordCharacters['specialCharacters']);
+        $isValid = false;
+        if (
+            preg_match('/[A-Z]/', $userPassword) &&
+            preg_match('/[a-z]/', $userPassword) &&
+            preg_match('/[0-9]/', $userPassword) &&
+            preg_match("{[$specialChars]}", $userPassword)
+        ) {
+            $isValid = true;
+        }
+        return $isValid;
     }
 }
