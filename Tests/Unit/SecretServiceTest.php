@@ -95,7 +95,6 @@ class SecretServiceTest extends TestCase
     /**
      * @throws Exception
      * @test
-     * TODO: Test vielleicht unschön?
      */
     public function messageGetsEncrypted()
     {
@@ -104,6 +103,7 @@ class SecretServiceTest extends TestCase
         $linkHash = $this->secretService->createSecret($message, $userPassword);
         $secret = $this->secretService->getSecret($userPassword, $linkHash);
         $this->assertNotEquals($message, $secret->getMessage());
+        $this->assertEquals($message, $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash));
     }
 
     public function invalidNumOfCharValuesProvider()
@@ -131,7 +131,6 @@ class SecretServiceTest extends TestCase
      */
     public function userPasswordGeneratorGeneratesExactlyNchars()
     {
-        //TODO: Unschön?
         for ($n = 4; $n < 100; $n++) {
             $userPassword = $this->secretService->generateUserPassword($n);
             $this->assertEquals($n, strlen($userPassword));
@@ -182,16 +181,5 @@ class SecretServiceTest extends TestCase
     public function userPasswordIsValidReturnsTrueOnValidInput($userPassword)
     {
         $this->assertTrue($this->secretService->userPasswordIsValid($userPassword));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function generateUserPasswordReturnsValidPasswords()
-    {
-        for($i = 0; $i <= 1000000; $i++){
-            $userPassword = $this->secretService->generateUserPassword(4);
-            assertTrue($this->secretService->userPasswordIsValid($userPassword));
-        }
     }
 }

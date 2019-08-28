@@ -30,7 +30,7 @@ class SecretService
         ],
 
         'digits' => [
-            '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            '2', '3', '4', '5', '6', '7', '8', '9',
         ],
 
         // '{' and '}' are being used to delimit the regular
@@ -95,6 +95,8 @@ class SecretService
      */
     public function createSecret(string $message, string $userPassword): string
     {
+        $message = trim($message);
+        $userPassword = trim($userPassword);
         if(!$message && $userPassword){
             throw new InvalidArgumentValueException();
         }
@@ -188,7 +190,7 @@ class SecretService
      */
     public function generateUserPassword(int $numOfChars)
     {
-        //TODO: Exception werfen oder $numOfChars auf Standardwert setzen?
+        // this depends on the rules in self::userPasswordIsValid
         if ($numOfChars < 4) {
             throw new RangeException('$numOfChars must be at least 4, ' . $numOfChars . ' given.');
         }

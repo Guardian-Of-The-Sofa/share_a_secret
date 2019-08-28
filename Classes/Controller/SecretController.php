@@ -8,6 +8,7 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use Hn\HnShareSecret\Service\SecretService;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
@@ -39,12 +40,14 @@ class SecretController extends ActionController
      */
     public function newAction()
     {
+        if($GLOBALS['BE_USER'] === null) {
+            // DO NOT ALLOW ACCESS!!!!!!11EINSELF
+            die('stirb');
+        }
         $userPassword = $this->secretService->generateUserPassword(8);
-        try {
+        if ($this->request->hasArgument('isInvalid')) {
             $isInvalid = $this->request->getArgument('isInvalid');
             $this->view->assign('isInvalid', $isInvalid);
-        } catch (NoSuchArgumentException $e) {
-            //TODO: Exception einfach verschlucken oder bessere Lösung?
         }
         $this->view->assign('userPassword', $userPassword);
     }
@@ -61,13 +64,13 @@ class SecretController extends ActionController
         try {
             $linkHash = $this->secretService->createSecret($message, $userPassword);
             $this->redirect('showLink', null, null, [
-                    'linkHash' => $linkHash,
-                    'userPassword' => $userPassword]
-            );
+                'linkHash' => $linkHash,
+                'userPassword' => $userPassword
+            ]);
         } catch (InvalidArgumentValueException $e) {
             $this->redirect('new', null, null, [
                 'isInvalid' => [
-                    'message' => strlen($message) ? false : true,
+                    'message' => strlen(trim($message)) === 0,
                 ],
             ]);
         }
@@ -118,10 +121,9 @@ class SecretController extends ActionController
             $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
             $this->view->assign('message', $message);
         } catch (
-            /*TODO: Abkürzen durch "Exception $e" ?*/
-            SecretNotFoundException |
-            InvalidArgumentValueException |
-            WrongKeyOrModifiedCiphertextException $e
+        SecretNotFoundException |
+        InvalidArgumentValueException |
+        WrongKeyOrModifiedCiphertextException $e
         ) {
             $this->redirectToInputPassword($linkHash);
         }

@@ -53,7 +53,6 @@ class SecretRepositoryTest extends FunctionalTestCase
             $this->secretRepository->save();
         }
         $this->assertEquals(count($this->secrets), $this->secretRepository->countAll());
-
     }
 
     public function testFindOneByIndexHash()

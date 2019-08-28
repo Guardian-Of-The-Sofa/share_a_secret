@@ -8,7 +8,7 @@ defined('TYPO3_MODE') || die('Access denied.');
     ],
     // non-cacheable actions
     [
-        'Secret' => 'create,show,showLink',
+        'Secret' => 'new,create,showLink,inputPassword,show',
     ]
 );
 
