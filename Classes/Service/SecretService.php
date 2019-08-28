@@ -90,6 +90,7 @@ class SecretService
      * @throws EnvironmentIsBrokenException
      * @throws InvalidArgumentValueException
      * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws Exception
      */
     public function createSecret(string $message, string $userPassword): string
     {

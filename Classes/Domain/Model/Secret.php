@@ -21,6 +21,7 @@ class Secret extends AbstractEntity
      * Secret constructor.
      * @param string $encMessage
      * @param $indexHash
+     * @throws InvalidArgumentValueException
      */
     public function __construct(string $encMessage, $indexHash)
     {
