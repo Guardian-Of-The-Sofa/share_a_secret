@@ -41,8 +41,7 @@ class SecretController extends ActionController
     public function newAction()
     {
         if ($GLOBALS['BE_USER'] === null) {
-            // DO NOT ALLOW ACCESS!!!!!!11EINSELF
-            die('stirb');
+            $this->redirect('pleaseLogin');
         }
         $userPassword = $this->secretService->generateUserPassword(8);
         if ($this->request->hasArgument('isInvalid')) {
@@ -133,4 +132,6 @@ class SecretController extends ActionController
             $this->redirectToInputPassword($linkHash);
         }
     }
+
+    public function pleaseLoginAction() {}
 }

@@ -4,7 +4,7 @@ defined('TYPO3_MODE') || die('Access denied.');
     'Hn.HnShareSecret',
     'Secret',
     [
-        'Secret' => 'new,create,showLink,inputPassword,show',
+        'Secret' => 'new,create,showLink,inputPassword,show,pleaseLogin',
     ],
     // non-cacheable actions
     [
