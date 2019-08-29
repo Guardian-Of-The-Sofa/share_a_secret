@@ -4,9 +4,11 @@ use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
+use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use Hn\HnShareSecret\Service\SecretService;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 
 class SecretServiceTest extends TestCase
 {
@@ -28,6 +30,10 @@ class SecretServiceTest extends TestCase
             ['', 'test'],
             ['test', ''],
             ['', ''],
+            [' ', ''],
+            ['', ' '],
+            ["\t", ""],
+            ["", "\t"],
         ];
     }
 
@@ -50,29 +56,18 @@ class SecretServiceTest extends TestCase
     }
 
     /**
-     * @dataProvider dummyValuesProvider
      * @test
-     * @param string $password
-     * @param string $linkHash
+     * @dataProvider dummyValuesProvider
+     * @param string $message
+     * @param string $userPassword
+     * @throws EnvironmentIsBrokenException
      * @throws InvalidArgumentValueException
+     * @throws IllegalObjectTypeException
      */
-    public function createPasswordWithEmptyValuesFails(string $password, string $linkHash)
+    public function createSecretWithEmptyOrWhitespaceValuesFails(string $message, string $userPassword)
     {
         $this->expectException(InvalidArgumentValueException::class);
-        $this->secretService->createPassword($password, $linkHash);
-    }
-
-    /**
-     * @param string $password
-     * @param string $linkHash
-     * @throws InvalidArgumentValueException
-     * @dataProvider dummyValuesProvider
-     * @test
-     */
-    public function createIndexHashWithEmptyValuesFails(string $password, string $linkHash)
-    {
-        $this->expectException(InvalidArgumentValueException::class);
-        $this->secretService->createIndexHash($password, $linkHash);
+        $this->secretService->createSecret($message, $userPassword);
     }
 
     /**
@@ -81,7 +76,7 @@ class SecretServiceTest extends TestCase
      * @throws Exception
      * @test
      */
-    public function messageCanBeDecrypted()
+    public function getDecryptedMessageSucceedsOnValidSecret()
     {
         $message = 'Hello World!';
         $userPassword = 'CorrectHorseBatteryStaple';
@@ -92,9 +87,38 @@ class SecretServiceTest extends TestCase
         $this->assertEquals($message, $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash));
     }
 
+    public function invalidInputProvider()
+    {
+        return [
+            ['a', 'b'],
+            ['' , 'b'],
+            ['a', ''],
+            ['' , ''],
+        ];
+    }
+
     /**
-     * @throws Exception
      * @test
+     * @dataProvider invalidInputProvider
+     * @param string $userPassword
+     * @param string $linkHash
+     * @throws EnvironmentIsBrokenException
+     * @throws IllegalObjectTypeException
+     * @throws InvalidArgumentValueException
+     * @throws SecretNotFoundException
+     * @throws WrongKeyOrModifiedCiphertextException
+     */
+    public function getDecryptedMessageFailsOnValidSecretButWrongCredentials(string $userPassword, string $linkHash)
+    {
+        $this->expectException(SecretNotFoundException::class);
+        $this->secretService->createSecret('Hello World', 'CorrectHorseBatteryStaple');
+        $secret = $this->secretService->getSecret($userPassword, $linkHash);
+        $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
+    }
+
+    /**
+     * @test
+     * @throws Exception
      */
     public function messageGetsEncrypted()
     {
@@ -119,7 +143,7 @@ class SecretServiceTest extends TestCase
      * @param int $numOfChars
      * @throws Exception
      */
-    public function invalidNumOfCharsThrowsException(int $numOfChars)
+    public function generateUserPasswordThrowsExceptionOnInvalidInput(int $numOfChars)
     {
         $this->expectException(RangeException::class);
         $this->secretService->generateUserPassword($numOfChars);
@@ -129,7 +153,7 @@ class SecretServiceTest extends TestCase
      * @test
      * @throws Exception
      */
-    public function userPasswordGeneratorGeneratesExactlyNchars()
+    public function generateUserPasswordGeneratesExactlyNchars()
     {
         for ($n = 4; $n < 100; $n++) {
             $userPassword = $this->secretService->generateUserPassword($n);

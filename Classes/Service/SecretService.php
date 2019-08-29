@@ -12,6 +12,7 @@ use Hn\HnShareSecret\Domain\Repository\SecretRepository;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use RangeException;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 
 class SecretService
 {
@@ -61,17 +62,17 @@ class SecretService
     /**
      * @param string $message
      * @param string $userPassword
-     * @return string
+     * @return string, a link hash for the secret
      * @throws EnvironmentIsBrokenException
      * @throws InvalidArgumentValueException
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
+     * @throws IllegalObjectTypeException
      * @throws Exception
      */
     public function createSecret(string $message, string $userPassword): string
     {
         $message = trim($message);
         $userPassword = trim($userPassword);
-        if (!$message && $userPassword) {
+        if (!($message && $userPassword)) {
             throw new InvalidArgumentValueException();
         }
 
@@ -165,9 +166,6 @@ class SecretService
      */
     private function createPassword(string $userPassword, string $linkHash): string
     {
-        if (!($userPassword && $linkHash)) {
-            throw new InvalidArgumentValueException();
-        }
         return $userPassword . $this->typo3Key . $linkHash;
     }
 

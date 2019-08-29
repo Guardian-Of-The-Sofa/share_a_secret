@@ -40,7 +40,7 @@ class SecretController extends ActionController
      */
     public function newAction()
     {
-        if($GLOBALS['BE_USER'] === null) {
+        if ($GLOBALS['BE_USER'] === null) {
             // DO NOT ALLOW ACCESS!!!!!!11EINSELF
             die('stirb');
         }
@@ -117,6 +117,11 @@ class SecretController extends ActionController
     public function showAction(string $linkHash, string $userPassword)
     {
         try {
+            /**
+             * TODO: Change signature of getDecryptedMessage to
+             * TODO: getDecryptedMessage($userPassword, $linkHash) and maybe make
+             * TODO: getSecret private?
+             */
             $secret = $this->secretService->getSecret($userPassword, $linkHash);
             $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
             $this->view->assign('message', $message);
