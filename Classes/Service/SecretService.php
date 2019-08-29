@@ -142,6 +142,21 @@ class SecretService
         return $userPassword;
     }
 
+    public function userPasswordIsValid(string $userPassword)
+    {
+        $specialChars = implode($this->userPasswordCharacters['specialCharacters']);
+        $isValid = false;
+        if (
+            preg_match('/[A-Z]/', $userPassword) &&
+            preg_match('/[a-z]/', $userPassword) &&
+            preg_match('/[0-9]/', $userPassword) &&
+            preg_match("{[$specialChars]}", $userPassword)
+        ) {
+            $isValid = true;
+        }
+        return $isValid;
+    }
+
     /**
      * @param string $userPassword
      * @param string $linkHash
@@ -189,20 +204,5 @@ class SecretService
     {
         $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
         return $encryptedMessage;
-    }
-
-    private function userPasswordIsValid(string $userPassword)
-    {
-        $specialChars = implode($this->userPasswordCharacters['specialCharacters']);
-        $isValid = false;
-        if (
-            preg_match('/[A-Z]/', $userPassword) &&
-            preg_match('/[a-z]/', $userPassword) &&
-            preg_match('/[0-9]/', $userPassword) &&
-            preg_match("{[$specialChars]}", $userPassword)
-        ) {
-            $isValid = true;
-        }
-        return $isValid;
     }
 }
