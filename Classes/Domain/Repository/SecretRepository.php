@@ -27,4 +27,14 @@ class SecretRepository extends Repository
         /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $query->execute()->getFirst();
     }
+
+    public function deleteSecret(Secret $secret)
+    {
+        $this->remove($secret);
+        $this->save();
+    }
+
+
+
+
 }

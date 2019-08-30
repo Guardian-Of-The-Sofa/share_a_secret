@@ -53,6 +53,11 @@ class SecretServiceTest extends TestCase
             ->willReturnCallback(function ($indexHash) {
                 return $this->secrets[$indexHash] ?? null;
             });
+        $this->secretRepository
+            ->method('deleteSecret')
+            ->willReturnCallback(function (Secret $secret) {
+                unset($this->secrets[$secret->getIndexHash()]);
+            });
     }
 
     /**
@@ -91,9 +96,9 @@ class SecretServiceTest extends TestCase
     {
         return [
             ['a', 'b'],
-            ['' , 'b'],
+            ['', 'b'],
             ['a', ''],
-            ['' , ''],
+            ['', ''],
         ];
     }
 
@@ -206,4 +211,49 @@ class SecretServiceTest extends TestCase
     {
         $this->assertTrue($this->secretService->userPasswordIsValid($userPassword));
     }
+
+    /**
+     * @test
+     * TODO: bringt mir dieser Test überhaupt was?
+     */
+    public function testDeleteSecret()
+    {
+        $this->expectException(SecretNotFoundException::class);
+        $message = "Hello World";
+        $userPassword = 'CorrectHorseBatteryStaple';
+        $linkHash = $this->secretService->createSecret($message, $userPassword);
+        $this->secretService->deleteSecret($userPassword, $linkHash);
+        $this->secretService->getSecret($userPassword, $linkHash);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetSecretThrowsExceptionOnNonExistingSecret()
+    {
+        $this->expectException(SecretNotFoundException::class);
+        $this->secretService->getSecret('a', 'b');
+    }
+
+    /**
+     * @test
+     */
+    public function testDeleteSecretByIndexHash()
+    {
+        $secrets = [];
+        for($i = 0; $i < 10; $i++){
+            $secrets[] = new Secret($i, $i);
+        }
+        foreach ($secrets as $secret){
+            $this->secretRepository->add($secret);
+        }
+        $this->secretRepository->save();
+        $this->assertEquals(count($secrets), count($this->secrets));
+        foreach ($this->secrets as $secret){
+            $indexHash = $secret->getIndexHash();
+            $this->secretService->deleteSecretByIndexHash($indexHash);
+            $this->assertNull($this->secretRepository->findOneByIndexHash($indexHash));
+        }
+    }
+
 }

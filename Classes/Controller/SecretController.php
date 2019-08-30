@@ -116,14 +116,10 @@ class SecretController extends ActionController
     public function showAction(string $linkHash, string $userPassword)
     {
         try {
-            /**
-             * TODO: Change signature of getDecryptedMessage to
-             * TODO: getDecryptedMessage($userPassword, $linkHash) and maybe make
-             * TODO: getSecret private?
-             */
             $secret = $this->secretService->getSecret($userPassword, $linkHash);
             $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
             $this->view->assign('message', $message);
+            $this->view->assign('indexHash', $secret->getIndexHash());
         } catch (
         SecretNotFoundException |
         InvalidArgumentValueException |
@@ -134,4 +130,9 @@ class SecretController extends ActionController
     }
 
     public function pleaseLoginAction() {}
+
+    public function deleteMessageAction(string $indexHash)
+    {
+        $this->secretService->deleteSecretByIndexHash($indexHash);
+    }
 }

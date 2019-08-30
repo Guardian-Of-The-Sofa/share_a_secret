@@ -90,7 +90,6 @@ class SecretService
      * @param string $userPassword
      * @param $linkHash
      * @return Secret
-     * @throws InvalidArgumentValueException
      * @throws SecretNotFoundException
      */
     public function getSecret(string $userPassword, $linkHash): Secret
@@ -110,7 +109,6 @@ class SecretService
      * @return string
      * @throws EnvironmentIsBrokenException
      * @throws WrongKeyOrModifiedCiphertextException
-     * @throws InvalidArgumentValueException
      */
     public function getDecryptedMessage(Secret $secret, string $userPassword, string $linkHash): string
     {
@@ -161,8 +159,27 @@ class SecretService
     /**
      * @param string $userPassword
      * @param string $linkHash
+     */
+    public function deleteSecret(string $userPassword, string $linkHash)
+    {
+        try {
+            $secret = $this->getSecret($userPassword, $linkHash);
+            $this->secretRepository->deleteSecret($secret);
+        } catch (SecretNotFoundException $e) {} //TODO: bessere Lösung?
+    }
+
+    public function deleteSecretByIndexHash(string $indexHash)
+    {
+        $secret = $this->secretRepository->findOneByIndexHash($indexHash);
+        if($secret){
+            $this->secretRepository->deleteSecret($secret);
+        }
+    }
+
+    /**
+     * @param string $userPassword
+     * @param string $linkHash
      * @return string
-     * @throws InvalidArgumentValueException
      */
     private function createPassword(string $userPassword, string $linkHash): string
     {
@@ -173,7 +190,6 @@ class SecretService
      * @param string $userPassword
      * @param string $linkHash
      * @return string
-     * @throws InvalidArgumentValueException
      */
     private function createIndexHash(string $userPassword, string $linkHash)
     {

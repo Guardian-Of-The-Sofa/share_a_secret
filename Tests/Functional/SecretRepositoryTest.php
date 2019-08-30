@@ -34,6 +34,9 @@ class SecretRepositoryTest extends FunctionalTestCase
         ];
     }
 
+    /**
+     * @test
+     */
     public function testSave()
     {
         $secret = new Secret('a', 'a');
@@ -43,18 +46,20 @@ class SecretRepositoryTest extends FunctionalTestCase
     }
 
     /**
-     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException
      * @test
      */
     public function saveMultiple()
     {
-        foreach ($this->secrets as $secret){
+        foreach ($this->secrets as $secret) {
             $this->secretRepository->add($secret);
             $this->secretRepository->save();
         }
         $this->assertEquals(count($this->secrets), $this->secretRepository->countAll());
     }
 
+    /**
+     * @test
+     */
     public function testFindOneByIndexHash()
     {
         foreach ($this->secrets as $secret) {
@@ -66,5 +71,23 @@ class SecretRepositoryTest extends FunctionalTestCase
             $foundSecret = $this->secretRepository->findOneByIndexHash($secret->getIndexHash());
             $this->assertSame($secret, $foundSecret);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function testDelete()
+    {
+        foreach ($this->secrets as $secret) {
+            $this->secretRepository->add($secret);
+        }
+        $this->secretRepository->save();
+        $this->assertEquals(count($this->secrets), $this->secretRepository->countAll());
+        foreach ($this->secrets as $secret){
+            $this->secretRepository->deleteSecret($secret);
+            $foundSecret = $this->secretRepository->findOneByIndexHash($secret->getIndexHash());
+            $this->assertNull($foundSecret);
+        }
+        $this->assertEquals(0, $this->secretRepository->countAll());
     }
 }

@@ -25,7 +25,9 @@ class Secret extends AbstractEntity
      */
     public function __construct(string $encMessage, $indexHash)
     {
-        if (! ($encMessage && $indexHash)){
+        trim($encMessage);
+        trim($indexHash);
+        if (strlen($encMessage) === 0 || strlen($indexHash) === 0){
             throw new InvalidArgumentValueException();
         }
 
