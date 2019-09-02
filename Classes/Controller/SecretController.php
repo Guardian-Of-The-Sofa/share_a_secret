@@ -32,6 +32,7 @@ class SecretController extends ActionController
      */
     public function __construct(\Hn\HnShareSecret\Service\SecretService $secretService)
     {
+        parent::__construct();
         $this->secretService = $secretService;
     }
 
