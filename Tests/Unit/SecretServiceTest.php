@@ -214,15 +214,15 @@ class SecretServiceTest extends TestCase
 
     /**
      * @test
-     * TODO: bringt mir dieser Test überhaupt was?
      */
     public function testDeleteSecret()
     {
-        $this->expectException(SecretNotFoundException::class);
         $message = "Hello World";
         $userPassword = 'CorrectHorseBatteryStaple';
         $linkHash = $this->secretService->createSecret($message, $userPassword);
         $this->secretService->deleteSecret($userPassword, $linkHash);
+
+        $this->expectException(SecretNotFoundException::class);
         $this->secretService->getSecret($userPassword, $linkHash);
     }
 

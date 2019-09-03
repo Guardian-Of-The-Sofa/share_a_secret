@@ -165,7 +165,7 @@ class SecretService
         try {
             $secret = $this->getSecret($userPassword, $linkHash);
             $this->secretRepository->deleteSecret($secret);
-        } catch (SecretNotFoundException $e) {} //TODO: bessere Lösung?
+        } catch (SecretNotFoundException $e) {}
     }
 
     public function deleteSecretByIndexHash(string $indexHash)
