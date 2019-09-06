@@ -6,10 +6,21 @@ use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Statistic extends AbstractEntity
 {
-    //TODO: woher weiß extbase, dass hier die id rein soll?
+    /**
+     * @var \Hn\HnShareSecret\Domain\Model\Secret
+     */
     protected $secret;
+    /**
+     * @var int
+     */
     protected $created;
+    /**
+     * @var int
+     */
     protected $read;
+    /**
+     * @var int
+     */
     protected $deleted;
 
     public function __construct(int $read = null, int $deleted = null)
