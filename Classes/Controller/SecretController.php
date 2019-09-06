@@ -44,7 +44,7 @@ class SecretController extends ActionController
         if ($GLOBALS['BE_USER'] === null) {
             $this->redirect('pleaseLogin');
         }
-        $userPassword = $this->secretService->generateUserPassword(8);
+        $userPassword = $this->secretService->generateUserPassword();
         if ($this->request->hasArgument('isInvalid')) {
             $isInvalid = $this->request->getArgument('isInvalid');
             $this->view->assign('isInvalid', $isInvalid);
