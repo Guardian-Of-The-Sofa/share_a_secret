@@ -22,6 +22,8 @@ class SecretService
      * @var SecretRepository;
      */
     private $secretRepository;
+    /** @var StatisticService */
+    private $statisticService;
     private $typo3Key;
     private $userPasswordCharacters = [
         // The letters I, l and O, 0 are removed since they are hard to distinguish on some fonts.
@@ -52,11 +54,18 @@ class SecretService
     /**
      * SecretService constructor.
      * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
+     * @param StatisticService $statisticService
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
+     * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
-    public function __construct(\Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository)
+    public function __construct(
+        \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository,
+        StatisticService $statisticService
+    )
     {
         $this->typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         $this->secretRepository = $secretRepository;
+        $this->statisticService = $statisticService;
         $this->userPasswordChars = array_merge(
             $this->userPasswordCharacters['letters'],
             $this->userPasswordCharacters['digits']
@@ -111,6 +120,8 @@ class SecretService
         $secret = new Secret($encMessage, $indexHash);
         $this->secretRepository->add($secret);
         $this->secretRepository->save();
+
+        $this->statisticService->create($secret);
         return $linkHash;
     }
 
