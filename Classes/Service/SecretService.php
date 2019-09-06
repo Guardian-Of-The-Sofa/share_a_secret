@@ -153,6 +153,11 @@ class SecretService
     {
         $password = $this->createPassword($userPassword, $linkHash);
         $decryptedMessage = Crypto::decryptWithPassword($secret->getMessage(), $password);
+
+        $statistic = $this->statisticService->getStatistic($secret);
+        $statistic->setRead((new DateTime())->getTimestamp());
+        $this->statisticService->update($statistic);
+
         return $decryptedMessage;
     }
 
