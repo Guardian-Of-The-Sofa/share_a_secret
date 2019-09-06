@@ -9,6 +9,7 @@ use TYPO3\CMS\Extbase\Mvc\Controller\AbstractController;
 
 class StatisticService
 {
+    /* @var StatisticRepository */
     private $statisticRepository;
 
     public function __construct(StatisticRepository $statisticRepository)
@@ -21,5 +22,20 @@ class StatisticService
         $statistic->setSecret($secret);
         $this->statisticRepository->add($statistic);
         $this->statisticRepository->save();
+    }
+
+    /**
+     * @param Secret $secret
+     * @return Statistic
+     */
+    public function getStatistic(Secret $secret): Statistic
+    {
+        $secretId = $secret->getUid();
+        return $this->statisticRepository->findBySecret($secret);
+    }
+
+    public function update(Statistic $statistic)
+    {
+        $this->statisticRepository->update($statistic);
     }
 }
