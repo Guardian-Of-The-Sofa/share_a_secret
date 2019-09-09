@@ -4,9 +4,18 @@ return [
     'ctrl' => [
         'title' => 'Secrets',
         'label' => 'message',
+        'crdate' => 'crdate',
     ],
 
     'columns' => [
+        'crdate' => [
+            'label' => 'Creation date',
+            'config' => [
+                'type' => 'input',
+                'readOnly' => 'true',
+            ],
+        ],
+
         'message' => [
             'label' => 'Message',
             'config' => [
