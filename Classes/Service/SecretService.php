@@ -217,6 +217,7 @@ class SecretService
         $secret = $this->secretRepository->findOneByIndexHash($indexHash);
         if($secret){
             $this->secretRepository->deleteSecret($secret);
+            $this->statisticService->setDeleted($secret);
         }
     }
 
