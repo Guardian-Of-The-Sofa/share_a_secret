@@ -130,9 +130,11 @@ class SecretService
      * @return string
      * @throws EnvironmentIsBrokenException
      * @throws WrongKeyOrModifiedCiphertextException
+     * @throws SecretNotFoundException
      */
-    public function getDecryptedMessage(Secret $secret, string $userPassword, string $linkHash): string
+    public function getDecryptedMessage(string $userPassword, string $linkHash): string
     {
+        $secret = $this->getSecret($userPassword, $linkHash);
         $password = $this->createPassword($userPassword, $linkHash);
         $decryptedMessage = Crypto::decryptWithPassword($secret->getMessage(), $password);
 
@@ -209,6 +211,17 @@ class SecretService
             $this->statisticService->setDeleted($secret);
             $this->eventLogService->log(new EventLog(EventLog::DELETE, $secret));
         }
+    }
+
+    /**
+     * @param string $userPassword
+     * @param string $linkHash
+     * @return string
+     * @throws SecretNotFoundException
+     */
+    public function getIndexHash(string $userPassword, string $linkHash)
+    {
+        return $this->getSecret($userPassword, $linkHash)->getIndexHash();
     }
 
     /**
