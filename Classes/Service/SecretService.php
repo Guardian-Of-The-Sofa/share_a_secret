@@ -28,7 +28,7 @@ class SecretService
     /** @var EventLogService */
     private $eventLogService;
     private $typo3Key;
-    private $userPasswordCharacters = [
+    private $userPasswordCharacterClasses = [
         // The letters I, l and O, 0 are removed since they are hard to distinguish on some fonts.
         'letters' => [
             'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M',
@@ -49,7 +49,7 @@ class SecretService
         ],
     ];
 
-    private $userPasswordChars;
+    private $userPasswordCharacters;
 
     private $userPasswordLength;
     private $containsSpecialCharacters;
@@ -72,31 +72,11 @@ class SecretService
         $this->secretRepository = $secretRepository;
         $this->statisticService = $statisticService;
         $this->eventLogService = $eventLogService;
-        $this->userPasswordChars = array_merge(
-            $this->userPasswordCharacters['letters'],
-            $this->userPasswordCharacters['digits']
+        $this->userPasswordCharacters = array_merge(
+            $this->userPasswordCharacterClasses['letters'],
+            $this->userPasswordCharacterClasses['digits']
         );
-        $backendSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)
-            ->get('hn_share_secret');
-        $this->userPasswordLength = $backendSettings['userPasswordLength'];
-        $this->containsSpecialCharacters = $backendSettings['containsSpecialCharacters'];
-        if($this->containsSpecialCharacters){
-            $this->userPasswordChars = array_merge(
-                $this->userPasswordChars,
-                $this->userPasswordCharacters['specialCharacters']
-            );
-            if($this->userPasswordLength < 4){
-                // For the password validation to succeed,
-                // the password must have at least 4 characters.
-                $this->userPasswordLength = 4;
-            }
-        } else {
-            if($this->userPasswordLength < 3 ){
-                // For the password validation to succeed,
-                // the password must have at least 3 characters.
-                $this->userPasswordLength = 3;
-            }
-        }
+        $this->initBackendSettings();
 //        debug($this->userPasswordLength);
 //        debug($this->containsSpecialCharacters);
 //        debug($this->userPasswordChars);die();
@@ -176,12 +156,12 @@ class SecretService
      */
     public function generateUserPassword()
     {
-        $maxIndex = count($this->userPasswordChars) - 1;
+        $maxIndex = count($this->userPasswordCharacters) - 1;
         $userPassword = '';
         while (!$this->userPasswordIsValid($userPassword)) {
             $userPassword = ''; // Reset non-valid password
             for ($i = 0; $i < $this->userPasswordLength; $i++) {
-                $userPassword .= $this->userPasswordChars[random_int(0, $maxIndex)];
+                $userPassword .= $this->userPasswordCharacters[random_int(0, $maxIndex)];
             }
         }
         return $userPassword;
@@ -189,7 +169,7 @@ class SecretService
 
     public function userPasswordIsValid(string $userPassword)
     {
-        $specialChars = implode($this->userPasswordCharacters['specialCharacters']);
+        $specialChars = implode($this->userPasswordCharacterClasses['specialCharacters']);
         $isValid = false;
         if (
             preg_match('/[A-Z]/', $userPassword) &&
@@ -279,5 +259,35 @@ class SecretService
     {
         $encryptedMessage = Crypto::encryptWithPassword($message, $plainPassword);
         return $encryptedMessage;
+    }
+
+    private function initBackendSettings()
+    {
+        $backendSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)
+            ->get('hn_share_secret');
+
+        $this->userPasswordLength = $backendSettings['userPasswordLength'];
+        if($this->userPasswordLength > 100){
+            $this->userPasswordLength = 100;
+        }
+
+        $this->containsSpecialCharacters = $backendSettings['containsSpecialCharacters'];
+        if($this->containsSpecialCharacters){
+            $this->userPasswordCharacters = array_merge(
+                $this->userPasswordCharacters,
+                $this->userPasswordCharacterClasses['specialCharacters']
+            );
+            if($this->userPasswordLength < 4){
+                // For the password validation to succeed,
+                // the password must have at least 4 characters.
+                $this->userPasswordLength = 4;
+            }
+        } else {
+            if($this->userPasswordLength < 3 ){
+                // For the password validation to succeed,
+                // the password must have at least 3 characters.
+                $this->userPasswordLength = 3;
+            }
+        }
     }
 }
