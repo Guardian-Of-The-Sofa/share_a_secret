@@ -192,13 +192,12 @@ class SecretService
     /**
      * @param string $userPassword
      * @param string $linkHash
+     * @throws SecretNotFoundException
      */
     public function deleteSecret(string $userPassword, string $linkHash)
     {
-        try {
-            $secret = $this->getSecret($userPassword, $linkHash);
-            $this->secretRepository->deleteSecret($secret);
-        } catch (SecretNotFoundException $e) {}
+        $secret = $this->getSecret($userPassword, $linkHash);
+        $this->secretRepository->deleteSecret($secret);
     }
 
     /**
