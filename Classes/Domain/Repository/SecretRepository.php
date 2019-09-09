@@ -3,6 +3,7 @@
 namespace Hn\HnShareSecret\Domain\Repository;
 
 use Hn\HnShareSecret\Domain\Model\Secret;
+use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
@@ -18,14 +19,18 @@ class SecretRepository extends Repository
 
     /**
      * @param string $hash
-     * @return Secret|null
+     * @return Secret
+     * @throws SecretNotFoundException
      */
     public function findOneByIndexHash(string $hash): ?Secret
     {
         $query = $this->createQuery();
         $query->matching($query->equals('indexHash', $hash));
-        /** @noinspection PhpIncompatibleReturnTypeInspection */
-        return $query->execute()->getFirst();
+        $secret = $query->execute()->getFirst();
+        if(!$secret){
+            throw new SecretNotFoundException();
+        }
+        return $secret;
     }
 
     public function deleteSecret(Secret $secret)
