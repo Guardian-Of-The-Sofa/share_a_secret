@@ -131,12 +131,10 @@ class SecretController extends ActionController
     public function showAction(string $linkHash, string $userPassword)
     {
         try {
-            //TODO: SecretNotFoundException gets thrown on wrong user password input
-            $secret = $this->secretService->getSecret($userPassword, $linkHash);
-            $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
+            $message = $this->secretService->getDecryptedMessage($userPassword, $linkHash);
             $this->eventLogService->log(new EventLog(EventLog::SUCCESS));
             $this->view->assign('message', $message);
-            $this->view->assign('indexHash', $secret->getIndexHash());
+            $this->view->assign('indexHash', $this->secretService->getIndexHash($userPassword, $linkHash));
         } catch (SecretNotFoundException $e){
             $this->eventLogService->log(new EventLog(EventLog::NOTFOUND));
             $this->redirectToInputPassword($linkHash);
