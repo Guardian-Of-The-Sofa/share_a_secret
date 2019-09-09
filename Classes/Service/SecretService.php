@@ -7,6 +7,7 @@ use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
+use Hn\HnShareSecret\Domain\Model\EventLog;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
@@ -24,6 +25,8 @@ class SecretService
     private $secretRepository;
     /** @var StatisticService */
     private $statisticService;
+    /** @var EventLogService */
+    private $eventLogService;
     private $typo3Key;
     private $userPasswordCharacters = [
         // The letters I, l and O, 0 are removed since they are hard to distinguish on some fonts.
@@ -55,17 +58,20 @@ class SecretService
      * SecretService constructor.
      * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
      * @param StatisticService $statisticService
+     * @param EventLogService $eventLogService
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
     public function __construct(
         \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository,
-        StatisticService $statisticService
+        StatisticService $statisticService,
+        EventLogService $eventLogService
     )
     {
         $this->typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         $this->secretRepository = $secretRepository;
         $this->statisticService = $statisticService;
+        $this->eventLogService = $eventLogService;
         $this->userPasswordChars = array_merge(
             $this->userPasswordCharacters['letters'],
             $this->userPasswordCharacters['digits']
@@ -122,6 +128,7 @@ class SecretService
         $this->secretRepository->save();
 
         $this->statisticService->create($secret);
+        $this->eventLogService->log(new EventLog(EventLog::CREATE, $secret));
         return $linkHash;
     }
 
@@ -157,6 +164,8 @@ class SecretService
         $statistic = $this->statisticService->getStatistic($secret);
         $statistic->setRead((new DateTime())->getTimestamp());
         $this->statisticService->update($statistic);
+
+        $this->eventLogService->log(new EventLog(EventLog::SUCCESS, $secret));
 
         return $decryptedMessage;
     }
@@ -212,12 +221,19 @@ class SecretService
         } catch (SecretNotFoundException $e) {}
     }
 
+    /**
+     * @param string $indexHash
+     * @throws IllegalObjectTypeException
+     * @throws \TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException
+     * @throws SecretNotFoundException
+     */
     public function deleteSecretByIndexHash(string $indexHash)
     {
         $secret = $this->secretRepository->findOneByIndexHash($indexHash);
         if($secret){
             $this->secretRepository->deleteSecret($secret);
             $this->statisticService->setDeleted($secret);
+            $this->eventLogService->log(new EventLog(EventLog::DELETE, $secret));
         }
     }
 

@@ -6,7 +6,9 @@ namespace Hn\HnShareSecret\Controller;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
+use Hn\HnShareSecret\Domain\Model\EventLog;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
+use Hn\HnShareSecret\Service\EventLogService;
 use Hn\HnShareSecret\Service\SecretService;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -15,6 +17,7 @@ use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 
 /**
  * Class SecretController
@@ -27,13 +30,23 @@ class SecretController extends ActionController
     private $secretService;
 
     /**
+     * @var EventLogService
+     */
+    private $eventLogService;
+
+    /**
      * SecretController constructor.
      * @param \Hn\HnShareSecret\Service\SecretService $secretService
+     * @param EventLogService $eventLogService
      */
-    public function __construct(\Hn\HnShareSecret\Service\SecretService $secretService)
+    public function __construct(
+        \Hn\HnShareSecret\Service\SecretService $secretService,
+        EventLogService $eventLogService
+    )
     {
         parent::__construct();
         $this->secretService = $secretService;
+        $this->eventLogService = $eventLogService;
     }
 
     /**
@@ -88,6 +101,7 @@ class SecretController extends ActionController
 
     public function inputPasswordAction(string $linkHash, bool $isInvalid = false)
     {
+        $this->eventLogService->log(new EventLog(EventLog::REQUEST));
         $this->view->assign('linkHash', $linkHash);
         $this->view->assign('isInvalid', $isInvalid);
     }
@@ -117,15 +131,17 @@ class SecretController extends ActionController
     public function showAction(string $linkHash, string $userPassword)
     {
         try {
+            //TODO: SecretNotFoundException gets thrown on wrong user password input
             $secret = $this->secretService->getSecret($userPassword, $linkHash);
             $message = $this->secretService->getDecryptedMessage($secret, $userPassword, $linkHash);
+            $this->eventLogService->log(new EventLog(EventLog::SUCCESS));
             $this->view->assign('message', $message);
             $this->view->assign('indexHash', $secret->getIndexHash());
-        } catch (
-        SecretNotFoundException |
-        InvalidArgumentValueException |
-        WrongKeyOrModifiedCiphertextException $e
-        ) {
+        } catch (SecretNotFoundException $e){
+            $this->eventLogService->log(new EventLog(EventLog::NOTFOUND));
+            $this->redirectToInputPassword($linkHash);
+        } catch (WrongKeyOrModifiedCiphertextException $e){
+            $this->eventLogService->log(new EventLog(EventLog::FAILEDATTEMPT));
             $this->redirectToInputPassword($linkHash);
         }
     }
@@ -134,6 +150,10 @@ class SecretController extends ActionController
 
     public function deleteMessageAction(string $indexHash)
     {
-        $this->secretService->deleteSecretByIndexHash($indexHash);
+        try {
+            $this->secretService->deleteSecretByIndexHash($indexHash);
+        } catch (SecretNotFoundException $e){
+            $this->eventLogService->log(new EventLog(Eventlog::NOTFOUND));
+        }
     }
 }
