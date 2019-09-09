@@ -11,7 +11,6 @@ use Hn\HnShareSecret\Domain\Model\EventLog;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
-use RangeException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
@@ -50,7 +49,6 @@ class SecretService
     ];
 
     private $userPasswordCharacters;
-
     private $userPasswordLength;
     private $containsSpecialCharacters;
 
@@ -77,9 +75,6 @@ class SecretService
             $this->userPasswordCharacterClasses['digits']
         );
         $this->initBackendSettings();
-//        debug($this->userPasswordLength);
-//        debug($this->containsSpecialCharacters);
-//        debug($this->userPasswordChars);die();
     }
 
     /**
@@ -244,7 +239,6 @@ class SecretService
     private function generateLinkHash(): string
     {
         $string = strval((new DateTime())->getTimestamp() * 1.0 / random_int(1, PHP_INT_MAX));
-
         return hash('sha512', $string);
     }
 
