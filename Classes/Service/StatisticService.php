@@ -6,6 +6,8 @@ use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Model\Statistic;
 use Hn\HnShareSecret\Domain\Repository\StatisticRepository;
 use TYPO3\CMS\Extbase\Mvc\Controller\AbstractController;
+use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
+use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 
 class StatisticService
 {
@@ -34,6 +36,24 @@ class StatisticService
         return $this->statisticRepository->findBySecret($secret);
     }
 
+    /**
+     * @param Secret $secret
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
+     */
+    public function setDeleted(Secret $secret)
+    {
+        $statistic = $this->statisticRepository->findBySecret($secret);
+        $statistic->setDeleted((new \DateTime())->getTimestamp());
+        $this->update($statistic);
+        $this->statisticRepository->save();
+    }
+
+    /**
+     * @param Statistic $statistic
+     * @throws IllegalObjectTypeException
+     * @throws UnknownObjectException
+     */
     public function update(Statistic $statistic)
     {
         $this->statisticRepository->update($statistic);
