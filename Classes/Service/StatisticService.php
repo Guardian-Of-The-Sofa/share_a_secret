@@ -5,7 +5,6 @@ namespace Hn\HnShareSecret\Service;
 use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Model\Statistic;
 use Hn\HnShareSecret\Domain\Repository\StatisticRepository;
-use TYPO3\CMS\Extbase\Mvc\Controller\AbstractController;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 

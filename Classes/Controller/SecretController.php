@@ -5,7 +5,6 @@ namespace Hn\HnShareSecret\Controller;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
-use Hn\HnShareSecret\Domain\Model\EventLog;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use Hn\HnShareSecret\Service\EventLogService;
 use Hn\HnShareSecret\Service\SecretService;
