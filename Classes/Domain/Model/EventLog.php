@@ -41,26 +41,21 @@ class EventLog extends AbstractEntity
 
     public function setMessageByEvent(int $event)
     {
-        $this->message = "";
-        if($this->secret){
-            $prefix = "ID " . $this->secret->getUid() . ': ';
-            $this->message = $prefix;
-        }
         switch ($event){
             case self::CREATE:
-                $this->message .= "Secret was created'";
+                $this->message = "Secret was created";
                 break;
             case self::SUCCESS:
-                $this->message .= "Password attempt succeeded'";
+                $this->message = "Password attempt succeeded";
                 break;
             case self::DELETE:
-                $this->message .= "Secret was deleted'";
+                $this->message = "Secret was deleted";
                 break;
             case self::REQUEST:
-                $this->message .= "Secret was requested";
+                $this->message = "Secret was requested";
                 break;
             case self::NOTFOUND:
-                $this->message .= "Attempt to access a non existing Secret";
+                $this->message = "Attempt to access a non existing Secret";
                 break;
         }
     }
