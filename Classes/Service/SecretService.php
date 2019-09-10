@@ -12,6 +12,7 @@ use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\SecretRepository;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
@@ -269,8 +270,14 @@ class SecretService
 
     private function initBackendSettings()
     {
-        $backendSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)
-            ->get('hn_share_secret');
+        if(class_exists(ExtensionConfiguration::class)) {
+
+            $backendSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)
+                ->get('hn_share_secret');
+        } else {
+
+            $backendSettings = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['hn_share_secret']);
+        }
 
         $this->userPasswordLength = $backendSettings['userPasswordLength'];
         if($this->userPasswordLength > 100){
