@@ -9,9 +9,8 @@ class EventLog extends AbstractEntity
     const CREATE = 0;
     const DELETE = 1;
     const REQUEST = 2;
-    const FAILEDATTEMPT = 3;
-    const SUCCESS = 4;
-    const NOTFOUND = 5;
+    const SUCCESS = 3;
+    const NOTFOUND = 4;
 
     /**
      * @var Secret
@@ -59,9 +58,6 @@ class EventLog extends AbstractEntity
                 break;
             case self::REQUEST:
                 $this->message .= "Secret was requested";
-                break;
-            case self::FAILEDATTEMPT:
-                $this->message .= "Failed password attempt";
                 break;
             case self::NOTFOUND:
                 $this->message .= "Attempt to access a non existing Secret";
