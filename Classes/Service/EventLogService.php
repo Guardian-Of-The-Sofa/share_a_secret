@@ -3,6 +3,7 @@
 namespace Hn\HnShareSecret\Service;
 
 use Hn\HnShareSecret\Domain\Model\EventLog;
+use Hn\HnShareSecret\Domain\Model\Secret;
 use Hn\HnShareSecret\Domain\Repository\EventLogRepository;
 
 class EventLogService
@@ -23,28 +24,28 @@ class EventLogService
         $this->eventLogRepository->save();
     }
 
-    public function logCreate()
+    public function logCreate(Secret $secret = null)
     {
-        $this->log(new EventLog(EventLog::CREATE));
+        $this->log(new EventLog(EventLog::CREATE, $secret));
     }
 
-    public function logSuccess()
+    public function logSuccess(Secret $secret = null)
     {
-        $this->log(new EventLog(EventLog::SUCCESS));
+        $this->log(new EventLog(EventLog::SUCCESS, $secret));
     }
 
-    public function logDelete()
+    public function logDelete(Secret $secret = null)
     {
-        $this->log(new EventLog(EventLog::DELETE));
+        $this->log(new EventLog(EventLog::DELETE, $secret));
     }
 
-    public function logRequest()
+    public function logRequest(Secret $secret = null)
     {
-        $this->log(new EventLog(EventLog::REQUEST));
+        $this->log(new EventLog(EventLog::REQUEST, $secret));
     }
 
-    public function logNotFound()
+    public function logNotFound(Secret $secret = null)
     {
-        $this->log(new EventLog(EventLog::NOTFOUND));
+        $this->log(new EventLog(EventLog::NOTFOUND, $secret));
     }
 }
