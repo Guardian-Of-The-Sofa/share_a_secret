@@ -96,7 +96,7 @@ class SecretController extends ActionController
 
     public function inputPasswordAction(string $linkHash, bool $isInvalid = false)
     {
-        $this->eventLogService->log(new EventLog(EventLog::REQUEST));
+        $this->eventLogService->logRequest();
         $this->view->assign('linkHash', $linkHash);
         $this->view->assign('isInvalid', $isInvalid);
     }
@@ -127,14 +127,11 @@ class SecretController extends ActionController
     {
         try {
             $message = $this->secretService->getDecryptedMessage($userPassword, $linkHash);
-            $this->eventLogService->log(new EventLog(EventLog::SUCCESS));
+            $this->eventLogService->logSuccess();
             $this->view->assign('message', $message);
             $this->view->assign('indexHash', $this->secretService->getIndexHash($userPassword, $linkHash));
-        } catch (SecretNotFoundException $e){
-            $this->eventLogService->log(new EventLog(EventLog::NOTFOUND));
-            $this->redirectToInputPassword($linkHash);
-        } catch (WrongKeyOrModifiedCiphertextException $e){
-            $this->eventLogService->log(new EventLog(EventLog::FAILEDATTEMPT));
+        } catch (SecretNotFoundException | WrongKeyOrModifiedCiphertextException $e){
+            $this->eventLogService->logNotFound();
             $this->redirectToInputPassword($linkHash);
         }
     }
@@ -146,7 +143,7 @@ class SecretController extends ActionController
         try {
             $this->secretService->deleteSecretByIndexHash($indexHash);
         } catch (SecretNotFoundException $e){
-            $this->eventLogService->log(new EventLog(Eventlog::NOTFOUND));
+            $this->eventLogService->logNotFound();
         }
     }
 }
