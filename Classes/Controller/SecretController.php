@@ -93,6 +93,10 @@ class SecretController extends ActionController
         $this->view->assign('userPassword', $userPassword);
     }
 
+    /**
+     * @param string $linkHash
+     * @param bool $isInvalid
+     */
     public function inputPasswordAction(string $linkHash, bool $isInvalid = false)
     {
         $this->eventLogService->logRequest();
@@ -137,6 +141,9 @@ class SecretController extends ActionController
 
     public function pleaseLoginAction() {}
 
+    /**
+     * @param string $indexHash
+     */
     public function deleteMessageAction(string $indexHash)
     {
         try {
