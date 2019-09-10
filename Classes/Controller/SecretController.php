@@ -2,7 +2,6 @@
 
 namespace Hn\HnShareSecret\Controller;
 
-
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
@@ -10,14 +9,10 @@ use Hn\HnShareSecret\Domain\Model\EventLog;
 use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
 use Hn\HnShareSecret\Service\EventLogService;
 use Hn\HnShareSecret\Service\SecretService;
-use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
-use TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 use TYPO3\CMS\Extbase\Mvc\Exception\UnsupportedRequestTypeException;
-use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
-use TYPO3\CMS\Extbase\Persistence\Exception\UnknownObjectException;
 
 /**
  * Class SecretController
