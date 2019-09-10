@@ -104,7 +104,7 @@ class SecretService
         $this->secretRepository->save();
 
         $this->statisticService->create($secret);
-        $this->eventLogService->log(new EventLog(EventLog::CREATE, $secret));
+        $this->eventLogService->logCreate($secret);
         return $linkHash;
     }
 
@@ -143,7 +143,7 @@ class SecretService
         $statistic->setRead((new DateTime())->getTimestamp());
         $this->statisticService->update($statistic);
 
-        $this->eventLogService->log(new EventLog(EventLog::SUCCESS, $secret));
+        $this->eventLogService->logSuccess($secret);
 
         return $decryptedMessage;
     }
@@ -210,7 +210,7 @@ class SecretService
         if($secret){
             $this->secretRepository->deleteSecret($secret);
             $this->statisticService->setDeleted($secret);
-            $this->eventLogService->log(new EventLog(EventLog::DELETE, $secret));
+            $this->eventLogService->logDelete($secret);
         }
     }
 
