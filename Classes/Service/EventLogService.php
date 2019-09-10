@@ -22,4 +22,29 @@ class EventLogService
         $this->eventLogRepository->add($eventLog);
         $this->eventLogRepository->save();
     }
+
+    public function logCreate()
+    {
+        $this->log(new EventLog(EventLog::CREATE));
+    }
+
+    public function logSuccess()
+    {
+        $this->log(new EventLog(EventLog::SUCCESS));
+    }
+
+    public function logDelete()
+    {
+        $this->log(new EventLog(EventLog::DELETE));
+    }
+
+    public function logRequest()
+    {
+        $this->log(new EventLog(EventLog::REQUEST));
+    }
+
+    public function logNotFound()
+    {
+        $this->log(new EventLog(EventLog::NOTFOUND));
+    }
 }
