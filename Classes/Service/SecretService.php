@@ -23,8 +23,6 @@ class SecretService
      * @var SecretRepository;
      */
     private $secretRepository;
-    /** @var StatisticService */
-    private $statisticService;
     /** @var EventLogService */
     private $eventLogService;
     private $typo3Key;
@@ -56,20 +54,17 @@ class SecretService
     /**
      * SecretService constructor.
      * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
-     * @param StatisticService $statisticService
      * @param EventLogService $eventLogService
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
     public function __construct(
         \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository,
-        StatisticService $statisticService,
         EventLogService $eventLogService
     )
     {
         $this->typo3Key = $GLOBALS['TYPO3_CONF_VARS']['SYS']['encryptionKey'];
         $this->secretRepository = $secretRepository;
-        $this->statisticService = $statisticService;
         $this->eventLogService = $eventLogService;
         $this->userPasswordCharacters = array_merge(
             $this->userPasswordCharacterClasses['letters'],
@@ -103,7 +98,6 @@ class SecretService
         $this->secretRepository->add($secret);
         $this->secretRepository->save();
 
-        $this->statisticService->create($secret);
         $this->eventLogService->logCreate($secret);
         return $linkHash;
     }
@@ -138,10 +132,6 @@ class SecretService
         $secret = $this->getSecret($userPassword, $linkHash);
         $password = $this->createPassword($userPassword, $linkHash);
         $decryptedMessage = Crypto::decryptWithPassword($secret->getMessage(), $password);
-
-        $statistic = $this->statisticService->getStatistic($secret);
-        $statistic->setRead((new DateTime())->getTimestamp());
-        $this->statisticService->update($statistic);
 
         $this->eventLogService->logSuccess($secret);
 
@@ -209,7 +199,6 @@ class SecretService
         $secret = $this->secretRepository->findOneByIndexHash($indexHash);
         if($secret){
             $this->secretRepository->deleteSecret($secret);
-            $this->statisticService->setDeleted($secret);
             $this->eventLogService->logDelete($secret);
         }
     }
