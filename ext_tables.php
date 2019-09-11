@@ -6,3 +6,5 @@
     'Share a secret',
     ''
 );
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript/', 'Secret js');

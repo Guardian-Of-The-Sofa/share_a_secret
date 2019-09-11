@@ -1,0 +1,7 @@
+page {
+    includeJSFooter {
+        hn_share_secret = EXT:hn_share_secret/Resources/Private/Templates/Secret/CopyToClipboard.js
+        hn_share_secret_2 = EXT:hn_share_secret/Resources/Private/Templates/Secret/InvalidField.js
+    }
+}
+
