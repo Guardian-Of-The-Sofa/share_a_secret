@@ -11,7 +11,7 @@ use TYPO3\CMS\Extbase\Object\ObjectManager;
 class SecretRepositoryTest extends FunctionalTestCase
 {
     protected $testExtensionsToLoad = [
-        'typo3conf/ext/hn_share_secret'
+        'typo3conf/ext/share_a_secret'
     ];
 
     private $objectManager;

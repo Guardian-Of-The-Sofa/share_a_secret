@@ -262,10 +262,10 @@ class SecretService
         if(class_exists(ExtensionConfiguration::class)) {
 
             $backendSettings = GeneralUtility::makeInstance(ExtensionConfiguration::class)
-                ->get('hn_share_secret');
+                ->get('share_a_secret');
         } else {
 
-            $backendSettings = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['hn_share_secret']);
+            $backendSettings = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['share_a_secret']);
         }
 
         $this->userPasswordLength = $backendSettings['userPasswordLength'];

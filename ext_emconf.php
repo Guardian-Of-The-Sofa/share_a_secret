@@ -1,7 +1,7 @@
 <?php
 
 $EM_CONF[$_EXTKEY] = [
-    'title' => 'Share Secret',
+    'title' => 'Share a secret',
     'description' => 'An extension to share secrets.',
     'category' => 'plugin',
     'author' => 'Jens Pausewang',

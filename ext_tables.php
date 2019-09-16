@@ -1,7 +1,7 @@
 <?php
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
-    'Hn.HnShareSecret',
+    'Hn.ShareASecret',
     'Secret',
     'Share a secret',
     ''

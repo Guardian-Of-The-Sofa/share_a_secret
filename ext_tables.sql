@@ -1,4 +1,4 @@
-CREATE TABLE tx_hnsharesecret_domain_model_secret
+CREATE TABLE tx_hnshareasecret_domain_model_secret
 (
     uid          int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
     pid          int(11)          DEFAULT '0' NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE tx_hnsharesecret_domain_model_secret
     KEY parent (pid)
 );
 
-CREATE TABLE tx_hnsharesecret_domain_model_eventlog
+CREATE TABLE tx_hnshareasecret_domain_model_eventlog
 (
     uid     int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
     pid     int(11)          DEFAULT '0' NOT NULL,
