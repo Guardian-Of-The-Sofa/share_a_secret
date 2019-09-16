@@ -1,14 +1,14 @@
 <?php
 
-namespace Hn\HnShareSecret\Domain\Repository;
+namespace Hn\ShareASecret\Domain\Repository;
 
-use Hn\HnShareSecret\Domain\Model\Secret;
-use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
+use Hn\ShareASecret\Domain\Model\Secret;
+use Hn\ShareASecret\Exceptions\SecretNotFoundException;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
 /**
  * Class SecretRepository
- * @package Hn\HnShareSecret\Domain\Repository
+ * @package Hn\ShareASecret\Domain\Repository
  */
 class SecretRepository extends Repository
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hn\HnShareSecret\Domain\Model;
+namespace Hn\ShareASecret\Domain\Model;
 
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 

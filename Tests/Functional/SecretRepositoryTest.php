@@ -1,9 +1,9 @@
 <?php
 
-namespace Hn\HnShareSecret\Tests\Functional;
+namespace Hn\ShareASecret\Tests\Functional;
 
-use Hn\HnShareSecret\Domain\Model\Secret;
-use Hn\HnShareSecret\Domain\Repository\SecretRepository;
+use Hn\ShareASecret\Domain\Model\Secret;
+use Hn\ShareASecret\Domain\Repository\SecretRepository;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManager;

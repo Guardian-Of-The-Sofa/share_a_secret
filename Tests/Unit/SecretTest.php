@@ -1,7 +1,7 @@
 <?php
 
 
-use Hn\HnShareSecret\Domain\Model\Secret;
+use Hn\ShareASecret\Domain\Model\Secret;
 use PHPUnit\Framework\TestCase;
 
 class SecretTest extends TestCase

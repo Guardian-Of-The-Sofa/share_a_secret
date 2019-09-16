@@ -1,6 +1,6 @@
 <?php
 
-namespace Hn\HnShareSecret\Exceptions;
+namespace Hn\ShareASecret\Exceptions;
 
 use Exception;
 

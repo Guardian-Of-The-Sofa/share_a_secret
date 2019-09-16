@@ -1,16 +1,16 @@
 <?php
 
-namespace Hn\HnShareSecret\Service;
+namespace Hn\ShareASecret\Service;
 
 use DateTime;
 use Defuse\Crypto\Crypto;
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
-use Hn\HnShareSecret\Domain\Model\EventLog;
-use Hn\HnShareSecret\Domain\Model\Secret;
-use Hn\HnShareSecret\Domain\Repository\SecretRepository;
-use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
+use Hn\ShareASecret\Domain\Model\EventLog;
+use Hn\ShareASecret\Domain\Model\Secret;
+use Hn\ShareASecret\Domain\Repository\SecretRepository;
+use Hn\ShareASecret\Exceptions\SecretNotFoundException;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\DebugUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -53,13 +53,13 @@ class SecretService
 
     /**
      * SecretService constructor.
-     * @param \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository
+     * @param \Hn\ShareASecret\Domain\Repository\SecretRepository $secretRepository
      * @param EventLogService $eventLogService
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationExtensionNotConfiguredException
      * @throws \TYPO3\CMS\Core\Configuration\Exception\ExtensionConfigurationPathDoesNotExistException
      */
     public function __construct(
-        \Hn\HnShareSecret\Domain\Repository\SecretRepository $secretRepository,
+        \Hn\ShareASecret\Domain\Repository\SecretRepository $secretRepository,
         EventLogService $eventLogService
     )
     {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Hn\HnShareSecret\Controller;
+namespace Hn\ShareASecret\Controller;
 
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 use Exception;
-use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
-use Hn\HnShareSecret\Service\EventLogService;
-use Hn\HnShareSecret\Service\SecretService;
+use Hn\ShareASecret\Exceptions\SecretNotFoundException;
+use Hn\ShareASecret\Service\EventLogService;
+use Hn\ShareASecret\Service\SecretService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
@@ -30,11 +30,11 @@ class SecretController extends ActionController
 
     /**
      * SecretController constructor.
-     * @param \Hn\HnShareSecret\Service\SecretService $secretService
+     * @param \Hn\ShareASecret\Service\SecretService $secretService
      * @param EventLogService $eventLogService
      */
     public function __construct(
-        \Hn\HnShareSecret\Service\SecretService $secretService,
+        \Hn\ShareASecret\Service\SecretService $secretService,
         EventLogService $eventLogService
     )
     {

@@ -2,10 +2,10 @@
 
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
-use Hn\HnShareSecret\Domain\Model\Secret;
-use Hn\HnShareSecret\Domain\Repository\SecretRepository;
-use Hn\HnShareSecret\Exceptions\SecretNotFoundException;
-use Hn\HnShareSecret\Service\SecretService;
+use Hn\ShareASecret\Domain\Model\Secret;
+use Hn\ShareASecret\Domain\Repository\SecretRepository;
+use Hn\ShareASecret\Exceptions\SecretNotFoundException;
+use Hn\ShareASecret\Service\SecretService;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Extbase\Mvc\Exception\InvalidArgumentValueException;
 use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;

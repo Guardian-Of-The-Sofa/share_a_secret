@@ -1,10 +1,10 @@
 <?php
 
-namespace Hn\HnShareSecret\Service;
+namespace Hn\ShareASecret\Service;
 
-use Hn\HnShareSecret\Domain\Model\EventLog;
-use Hn\HnShareSecret\Domain\Model\Secret;
-use Hn\HnShareSecret\Domain\Repository\EventLogRepository;
+use Hn\ShareASecret\Domain\Model\EventLog;
+use Hn\ShareASecret\Domain\Model\Secret;
+use Hn\ShareASecret\Domain\Repository\EventLogRepository;
 
 class EventLogService
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Hn\HnShareSecret\Domain\Repository;
+namespace Hn\ShareASecret\Domain\Repository;
 
 use TYPO3\CMS\Extbase\Persistence\Repository;
 
