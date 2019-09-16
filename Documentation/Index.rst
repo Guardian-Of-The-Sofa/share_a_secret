@@ -44,16 +44,16 @@ extension is for you.
 
 **Community Documentation:**
 
-   This documentation is community documentation for the TYPO3 extension hn_share_secret
+   This documentation is community documentation for the TYPO3 extension share_a_secret
 
    It is maintained as part of this third party extension.
 
    If you find an error or something is missing, please:
-   `Report a Problem <https://bitbucket.org/hauptsachenet/hn_share_secret/issues?status=new&status=open>`__
+   `Report a Problem <https://bitbucket.org/hauptsachenet/share_a_secret/issues?status=new&status=open>`__
 
 **Extension Manual**
 
-   This documentation is for the TYPO3 extension hn_share_secret.
+   This documentation is for the TYPO3 extension share_a_secret.
 
 
 

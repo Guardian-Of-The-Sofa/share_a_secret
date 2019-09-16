@@ -16,7 +16,7 @@ You can configure the length of the generated password an whether it should
 contain special characters or not.
 
 Access the backend of Typo3 and click on 
-:guilabel:`ADMIN TOOLS > Settings > Configure extensions > hn_share_secret`:
+:guilabel:`ADMIN TOOLS > Settings > Configure extensions > share_a_secret`:
 
 .. image:: ../Images/UserManual/extension-configuration-1.png
    :class: with-shadow
@@ -56,7 +56,7 @@ scheduler will search for expired messages every day at 0:00am:
    :class: with-shadow
 
 In the section **Table to clean up** you choose 
-**tx_hnshareasecret_domain_model_secret**
+**tx_shareasecret_domain_model_secret**
 
 Last thing to do is to specify after how many days a message 
 should get deleted. Set this according to your needs.
