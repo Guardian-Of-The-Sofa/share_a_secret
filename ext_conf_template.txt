@@ -4,4 +4,4 @@ userPasswordLength = 8
 # type=boolean;
 # TODO: multiline comment?
 # label=Use special characters : If set, the generated user password will contain special characters. If the password length is less than 4 it will be set to 4.
-containsSpecialCharacters = false
+containsSpecialCharacters = 0
