@@ -8,10 +8,13 @@
 Installation
 ============
 
-Target group: **Administrators**
+For a general overview please refer to :ref:`t3install:extension-installation`.
 
-- How is the extension installed?
-- Are there any dependencies that need to be resolved?
+composer
+========
 
-You can also refer to general TYPO3 documentation, for example the
-:ref:`t3install:start`.
+A simple::
+
+   composer require hn/share-a-secret
+
+inside your Typo3 installation folder will install the extension.

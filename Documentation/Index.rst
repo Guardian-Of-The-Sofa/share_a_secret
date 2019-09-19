@@ -49,7 +49,7 @@ extension is for you.
    It is maintained as part of this third party extension.
 
    If you find an error or something is missing, please:
-   `Report a Problem <https://bitbucket.org/hauptsachenet/share_a_secret/issues?status=new&status=open>`__
+   `Report a Problem <https://github.com/hauptsacheNet/share_a_secret.git>`__
 
 **Extension Manual**
 
@@ -77,7 +77,6 @@ extension is for you.
    Editor/Index
    Installation/Index
    Configuration/Index
-   Developer/Index
    Log/Index
    Sitemap
 
