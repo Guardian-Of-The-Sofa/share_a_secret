@@ -8,6 +8,10 @@
 Installation
 ============
 
+.. important::
+   For security reasons, install this extension only on a
+   website which is accessible via **https**.
+
 For a general overview please refer to :ref:`t3install:extension-installation`.
 
 composer
