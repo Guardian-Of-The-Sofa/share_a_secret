@@ -48,4 +48,9 @@ class EventLogService
     {
         $this->log(new EventLog(EventLog::NOTFOUND, $secret));
     }
+
+    public function findAllDescending()
+    {
+        return $this->eventLogRepository->findAllDescending();
+    }
 }
