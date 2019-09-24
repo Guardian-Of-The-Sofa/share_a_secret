@@ -16,6 +16,11 @@
     "typo3/cms-scheduler": "~8.7.27||9.5.*",
     "defuse/php-encryption": "^2.2"
   },
+  "extra": {
+    "typo3/cms": {
+      "extension-key": "share_a_secret"
+    }
+  },
   "autoload": {
     "psr-4": {
       "Hn\\ShareASecret\\": "Classes"
