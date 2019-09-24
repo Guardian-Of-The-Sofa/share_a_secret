@@ -13,7 +13,7 @@ class EventLog extends AbstractEntity
     const NOTFOUND = 4;
 
     /**
-     * @var Secret
+     * @var \Hn\ShareASecret\Domain\Model\Secret
      */
     protected $secret;
 
