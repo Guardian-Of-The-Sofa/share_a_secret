@@ -1,0 +1,35 @@
+<f:comment>
+    Required arguments:
+        events: array, the entries found in the database
+        columns: array, the column names to display
+</f:comment>
+<f:layout name="Default" />
+
+<f:section name="Main">
+    <table class="table table-striped">
+        <tr>
+            <th scope="col">Uid</th>
+            <f:for each="{columns}" as="column">
+                <th scope="col">{column}</th>
+            </f:for>
+        </tr>
+        <f:for each="{events}" as="event">
+           <tr>
+               <th scope="row">{event.Uid}</th>
+               <f:for each="{columns}" as="column">
+                   <f:switch expression="{column}">
+                       <f:case value="date">
+                           <td>{f:format.date(date: '@{event.{column}}', format: 'Y.m.d. H:i:s')}</td>
+                       </f:case>
+                       <f:defaultCase>
+                           <td>{event.{column}}</td>
+                       </f:defaultCase>
+                   </f:switch>
+               </f:for>
+           </tr>
+        </f:for>
+    </table>
+    <f:for each="{events}" as="event">
+    </f:for>
+</f:section>
+
