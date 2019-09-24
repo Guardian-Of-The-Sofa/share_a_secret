@@ -130,7 +130,6 @@ class SecretController extends ActionController
     {
         try {
             $message = $this->secretService->getDecryptedMessage($userPassword, $linkHash);
-            $this->eventLogService->logSuccess();
             $this->view->assign('message', $message);
             $this->view->assign('indexHash', $this->secretService->getIndexHash($userPassword, $linkHash));
         } catch (SecretNotFoundException | WrongKeyOrModifiedCiphertextException $e){
