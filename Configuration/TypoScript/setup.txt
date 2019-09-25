@@ -3,9 +3,11 @@ page {
         bootstrap = https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js
         bootstrap.integrity = sha384-xrRywqdh3PHs8keKZN+8zzc5TX0GRTLCcmivcbNJWm2rs5C8PRhcEn3czEjhAO9o
         bootstrap.external = 1
+        bootstrap.forceOnTop = 1
         jQuery = https://code.jquery.com/jquery-3.4.1.min.js
         jQuery.integrity = sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=
         jQuery.external = 1
+        jQuery.forceOnTop = 1
         share_a_secret = EXT:share_a_secret/Resources/Public/js/CopyToClipboard.js
         share_a_secret_2 = EXT:share_a_secret/Resources/Public/js/InvalidField.js
     }
