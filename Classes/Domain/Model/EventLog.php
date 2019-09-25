@@ -13,7 +13,7 @@ class EventLog extends AbstractEntity
     const NOTFOUND = 4;
 
     /**
-     * @var \Hn\ShareASecret\Domain\Model\Secret
+     * @var int
      */
     protected $secret;
 
@@ -34,7 +34,7 @@ class EventLog extends AbstractEntity
 
     public function __construct(int $event, Secret $secret = null)
     {
-        $this->secret = $secret;
+        $this->secret = $secret ? $secret->getUid() : null;
         $this->event = $event;
         $this->setMessageByEvent($event);
     }
@@ -106,5 +106,10 @@ class EventLog extends AbstractEntity
     public function setMessage(string $message): void
     {
         $this->message = $message;
+    }
+
+    public function getSecret()
+    {
+        return $this->secret;
     }
 }
