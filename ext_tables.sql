@@ -16,7 +16,7 @@ CREATE TABLE tx_shareasecret_domain_model_eventlog
     uid     int(11) unsigned DEFAULT '0' NOT NULL auto_increment,
     pid     int(11)          DEFAULT '0' NOT NULL,
 
-    secret  int(11) unsigned,
+    secret  int(11) unsigned DEFAULT NULL,
     date    int(11) unsigned             NOT NULL,
     event   int(11) unsigned NOT NULL,
     message text,
