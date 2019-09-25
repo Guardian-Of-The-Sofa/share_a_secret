@@ -18,7 +18,7 @@ class LogController extends ActionController
     public function listAction()
     {
         $events = $this->eventLogService->findAllDescending();
-        $columns = ['date', 'message'];
+        $columns = ['date', 'message', 'secret'];
         $this->view->assign('events', $events);
         $this->view->assign('columns', $columns);
     }
