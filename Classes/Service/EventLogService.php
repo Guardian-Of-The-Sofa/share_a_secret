@@ -87,12 +87,12 @@ class EventLogService
         $queryBuilder->resetQueryParts();
         $statement = $queryBuilder
             ->select(
-                'secret.uid AS secretID',
+                'eventlog.secret AS secretID',
                         'secret.crdate AS creationDate',
                         'eventlog.date AS readDate'
             )
             ->from('tx_shareasecret_domain_model_secret', 'secret')
-            ->innerJoin(
+            ->rightJoin(
                 'secret',
                 'tx_shareasecret_domain_model_eventlog',
                 'eventlog',
@@ -112,7 +112,9 @@ class EventLogService
         $readSecrets = $statement->fetchAll();
         $readSecretIDs = [];
         foreach ($readSecrets as $value){
-            $readSecretIDs[] = $value['secretID'];
+            if($value['secretID']){
+                $readSecretIDs[] = $value['secretID'];
+            }
         }
         $return['readSecrets'] = $readSecrets;
         $return['totalStatistic'][0]['readSecrets'] = count($return['readSecrets']);
@@ -142,6 +144,23 @@ class EventLogService
             ->execute();
         $existingSecrets = $statement->fetchAll();
         $return['existingSecrets'] = $existingSecrets;
+
+        /**
+         * Get all deleted secrets
+         */
+        $queryBuilder->resetQueryParts();
+        $statement = $queryBuilder
+            ->select('*')
+            ->from('tx_shareasecret_domain_model_eventlog', 'eventlog')
+            ->where(
+                $queryBuilder->expr()->eq('event', $queryBuilder->createNamedParameter(EventLog::DELETE))
+            )
+            ->execute();
+        $deletedSecrets= $statement->fetchAll();
+        $deletedSecretsCount = count($deletedSecrets);
+        $return['totalStatistic'][0]['deletedSecrets'] = $deletedSecretsCount;
+        $return['deletedSecrets'] = $deletedSecrets;
+
         return $return;
     }
 }

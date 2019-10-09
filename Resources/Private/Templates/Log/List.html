@@ -16,6 +16,14 @@
                }"
                tableHeading="Total statistics"
     />
+    <sas:table elements="{statistics.existingSecrets}"
+               tableHeading="All secrets in the database"
+               excludeColumns="{
+                    0: 'message',
+                    1: 'index_hash'
+               }"
+               formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
+    />
     <sas:table elements="{statistics.unreadSecrets}"
                excludeColumns="{
                     0: 'message',
@@ -28,19 +36,21 @@
                     uid: 'Secret ID'
                }"
     />
-    <sas:table elements="{statistics.existingSecrets}"
-               tableHeading="All secrets in the database"
-               excludeColumns="{
-                    0: 'message',
-                    1: 'index_hash'
-               }"
-               formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
-    />
     <sas:table elements="{statistics.readSecrets}"
                tableHeading="All read secrets"
                formats="{
                     creationDate: {date: 'Y.m.d. H:i:s'},
                     readDate: {date: 'Y.m.d. H:i:s'}
+               }"
+    />
+    <sas:table elements="{statistics.deletedSecrets}"
+               tableHeading="All deleted secrets"
+               columns="{
+                    secret: 'Secret ID',
+                    date: 'Deletion date'
+               }"
+               formats="{
+                    date: {date: 'Y.m.d. H:i:s'}
                }"
     />
 </f:section>
