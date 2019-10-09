@@ -4,6 +4,7 @@ namespace Hn\ShareASecret\Controller;
 
 use Hn\ShareASecret\Service\EventLogService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use Hn\ShareASecret\Utility\ArrayModifier;
 
 class LogController extends ActionController
 {
@@ -17,9 +18,7 @@ class LogController extends ActionController
 
     public function listAction()
     {
-        $events = $this->eventLogService->findAllDescending();
-        $columns = ['date', 'message', 'secret'];
-        $this->view->assign('events', $events);
-        $this->view->assign('columns', $columns);
+        $statistics = $this->eventLogService->getStatistics();
+        $this->view->assign('statistics', $statistics);
     }
 }
