@@ -1,32 +1,47 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:sas="http://typo3.org/ns/Hn/ShareASecret/ViewHelpers"
+      data-namespace-typo3-fluid="true"
+>
 <f:comment>
     Required arguments:
-        events: array, the entries found in the database
-        columns: array, the column names to display
+    statistics: array, an array containing arrays to be displayed as a table
 </f:comment>
 <f:layout name="Default" />
 <f:section name="Main">
-    <table class="table table-striped">
-        <tr>
-            <th scope="col">Uid</th>
-            <f:for each="{columns}" as="column">
-                <th scope="col">{column}</th>
-            </f:for>
-        </tr>
-        <f:for each="{events}" as="event">
-           <tr>
-               <th scope="row">{event.Uid}</th>
-               <f:for each="{columns}" as="column">
-                   <f:switch expression="{column}">
-                       <f:case value="date">
-                           <td>{f:format.date(date: '@{event.{column}}', format: 'Y.m.d. H:i:s')}</td>
-                       </f:case>
-                       <f:defaultCase>
-                           <td>{event.{column}}</td>
-                       </f:defaultCase>
-                   </f:switch>
-               </f:for>
-           </tr>
-        </f:for>
-    </table>
+    <sas:table elements="{statistics.totalStatistic}"
+               columnNames="{
+                    createdSecretsCount: 'Created secrets',
+                    readSecrets: 'Read secrets',
+                    unreadSecrets: 'Unread secrets'
+               }"
+               tableHeading="Total statistics"
+    />
+    <sas:table elements="{statistics.unreadSecrets}"
+               excludeColumns="{
+                    0: 'message',
+                    1: 'index_hash'
+               }"
+               tableHeading="All unread secrets"
+               formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
+               columnNames="{
+                    crdate: 'Creation date',
+                    uid: 'Secret ID'
+               }"
+    />
+    <sas:table elements="{statistics.existingSecrets}"
+               tableHeading="All secrets in the database"
+               excludeColumns="{
+                    0: 'message',
+                    1: 'index_hash'
+               }"
+               formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
+    />
+    <sas:table elements="{statistics.readSecrets}"
+               tableHeading="All read secrets"
+               formats="{
+                    creationDate: {date: 'Y.m.d. H:i:s'},
+                    readDate: {date: 'Y.m.d. H:i:s'}
+               }"
+    />
 </f:section>
-
+</html>
