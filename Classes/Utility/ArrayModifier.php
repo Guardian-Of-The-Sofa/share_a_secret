@@ -2,6 +2,8 @@
 
 namespace Hn\ShareASecret\Utility;
 
+use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+
 class ArrayModifier
 {
     const ASC = 0;
@@ -12,8 +14,8 @@ class ArrayModifier
 
     public static function compare($a, $b)
     {
-        $aValue = self::getPropertyValue($a, self::$currentProperty);
-        $bValue = self::getPropertyValue($b, self::$currentProperty);
+        $aValue = ObjectAccess::getProperty($a, self::$currentProperty);
+        $bValue = ObjectAccess::getProperty($b, self::$currentProperty);
         $compare = ($aValue == $bValue);
         if($compare) { return 0; }
 
@@ -28,29 +30,11 @@ class ArrayModifier
         }
     }
 
-    public static function getMethodName(string $property)
-    {
-        // Replace first letter by its upper case
-        $property = substr_replace($property, strtoupper(substr($property, 0, 1)),0, 1);
-        return $getMethod = 'get' . $property;
-    }
-
-    public static function getPropertyValue($object, string $property)
-    {
-        $return = '';
-        if(gettype($object) == 'object'){
-            $return = $object->{self::getMethodName($property)}();
-        }elseif (gettype($object) == 'array'){
-            $return = $object[self::$currentProperty];
-        }
-        return $return;
-    }
-
     public static function getByNonNullProperty(array $array, string $property) : array
     {
         $return = [];
         foreach ($array as $value){
-            if(self::getPropertyValue($value, $property) !== null){
+            if(ObjectAccess::getProperty($value, $property) !== null){
                 $return[] = $value;
             }
         }
@@ -69,10 +53,10 @@ class ArrayModifier
     {
         $return = [];
         foreach ($array as $element){
-            if(!isset($return[self::getPropertyValue($element, $property)])){
-                $return[self::getPropertyValue($element, $property)] = [];
+            if(!isset($return[ObjectAccess::getProperty($element, $property)])){
+                $return[ObjectAccess::getProperty($element, $property)] = [];
             }
-            $return[self::getPropertyValue($element, $property)][] = $element;
+            $return[ObjectAccess::getProperty($element, $property)][] = $element;
         }
         return $return;
     }
