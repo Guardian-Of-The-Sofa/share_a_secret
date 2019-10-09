@@ -35,9 +35,15 @@ class ArrayModifier
         return $getMethod = 'get' . $property;
     }
 
-    public static function getPropertyValue(object $object, string $property)
+    public static function getPropertyValue($object, string $property)
     {
-        return $object->{self::getMethodName($property)}();
+        $return = '';
+        if(gettype($object) == 'object'){
+            $return = $object->{self::getMethodName($property)}();
+        }elseif (gettype($object) == 'array'){
+            $return = $object[self::$currentProperty];
+        }
+        return $return;
     }
 
     public static function getByNonNullProperty(array $array, string $property) : array
