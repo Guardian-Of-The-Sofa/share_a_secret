@@ -16,6 +16,18 @@
                }"
                tableHeading="Total statistics"
     />
+    <sas:table elements="{statistics.createdSecrets}"
+               tableHeading="All created secrets"
+               excludeColumns="{
+                    0: 'message',
+                    1: 'index_hash'
+               }"
+               formats="{date: {date: 'Y.m.d. H:i:s'}}"
+               columns="{
+                    secret: 'Secret ID',
+                    date: 'Creation date'
+               }"
+    />
     <sas:table elements="{statistics.existingSecrets}"
                tableHeading="All secrets in the database"
                excludeColumns="{

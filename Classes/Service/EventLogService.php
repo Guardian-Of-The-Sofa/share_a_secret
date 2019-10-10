@@ -60,16 +60,18 @@ class EventLogService
             'unreadSecrets' => null,
             'readSecrets' => null,
             'existingSecrets' => null,
+            'createdSecrets' => null,
+            'deletedSecrets' => null,
         ];
 
         /**
-         * get the count of all created Secrets
+         * get all created secrets
          */
         /* @var QueryBuilder $queryBuilder */
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)
             ->getQueryBuilderForTable('tx_shareasecret_domain_model_eventlog');
         $statement = $queryBuilder
-            ->count('*')
+            ->select('*')
             ->from('tx_shareasecret_domain_model_eventlog')
             ->where(
                 $queryBuilder->expr()->eq(
@@ -78,8 +80,10 @@ class EventLogService
                 )
             )
             ->execute();
-        $createdSecretsCount = array_shift($statement->fetch());
+        $createdSecrets = $statement->fetchAll();
+        $createdSecretsCount = count($createdSecrets);
         $return['totalStatistic'][0]['createdSecretsCount'] = $createdSecretsCount;
+        $return['createdSecrets'] = $createdSecrets;
 
         /**
          * get all secrets which have been read
