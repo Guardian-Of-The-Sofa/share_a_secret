@@ -16,30 +16,48 @@
                }"
                tableHeading="Total statistics"
     />
+    <sas:table elements="{statistics.mostRecentEvents}"
+               tableHeading="Most recent events"
+               columns="{
+                    uid: 'Event ID',
+                    date: 'Date',
+                    secret: 'Secret ID',
+                    message: 'Logged message'
+               }"
+               formats="{
+                    date: {date: 'Y.m.d. H:i:s'}
+               }"
+    />
     <sas:table elements="{statistics.createdSecrets}"
                tableHeading="All created secrets"
                excludeColumns="{
                     0: 'message',
                     1: 'index_hash'
                }"
-               formats="{date: {date: 'Y.m.d. H:i:s'}}"
+               formats="{creationDate: {date: 'Y.m.d. H:i:s'}}"
                columns="{
                     secret: 'Secret ID',
-                    date: 'Creation date'
+                    creationDate: 'Creation date'
                }"
     />
     <sas:table elements="{statistics.existingSecrets}"
                tableHeading="All secrets in the database"
                excludeColumns="{
                     0: 'message',
-                    1: 'index_hash'
+                    1: 'index_hash',
+                    2: 'pid'
+               }"
+               columnNames="{
+                    uid: 'Secret ID',
+                    crdate: 'Creation date'
                }"
                formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
     />
     <sas:table elements="{statistics.unreadSecrets}"
                excludeColumns="{
                     0: 'message',
-                    1: 'index_hash'
+                    1: 'index_hash',
+                    2: 'pid'
                }"
                tableHeading="All unread secrets"
                formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
@@ -50,9 +68,14 @@
     />
     <sas:table elements="{statistics.readSecrets}"
                tableHeading="All read secrets"
+               columns="{
+                    secret: 'Secret ID',
+                    creationDate: 'Creation date',
+                    logDate: 'Date of reading'
+               }"
                formats="{
                     creationDate: {date: 'Y.m.d. H:i:s'},
-                    readDate: {date: 'Y.m.d. H:i:s'}
+                    logDate: {date: 'Y.m.d. H:i:s'}
                }"
     />
     <sas:table elements="{statistics.deletedSecrets}"
