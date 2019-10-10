@@ -3,22 +3,25 @@
 namespace Hn\ShareASecret\Controller;
 
 use Hn\ShareASecret\Service\EventLogService;
+use Hn\ShareASecret\Service\StatisticService;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use Hn\ShareASecret\Utility\ArrayModifier;
 
 class LogController extends ActionController
 {
-    private $eventLogService;
+    /* @var StatisticService */
+    private $statisticService;
 
-    public function __construct(EventLogService $eventLogService)
+    public function __construct(
+        StatisticService $statisticService
+    )
     {
         parent::__construct();
-        $this->eventLogService = $eventLogService;
+        $this->statisticService = $statisticService;
     }
 
     public function listAction()
     {
-        $statistics = $this->eventLogService->getStatistics();
+        $statistics = $this->statisticService->getStatistics();
         $this->view->assign('statistics', $statistics);
     }
 }
