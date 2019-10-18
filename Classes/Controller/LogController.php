@@ -23,5 +23,6 @@ class LogController extends ActionController
     {
         $statistics = $this->statisticService->getStatistics();
         $this->view->assign('statistics', $statistics);
+        $this->view->assign('activityChartConfig', $this->statisticService->getActivityChartConfig());
     }
 }
