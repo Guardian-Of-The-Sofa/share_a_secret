@@ -8,6 +8,8 @@
 </f:comment>
 <f:layout name="Default" />
 <f:section name="Main">
+    <div data-highchart="{activityChartConfig -> f:format.json()}" style="width:100%; height:800px;"></div>
+
     <sas:table elements="{statistics.totalStatistic}"
                columnNames="{
                     createdSecretsCount: 'Created secrets',
