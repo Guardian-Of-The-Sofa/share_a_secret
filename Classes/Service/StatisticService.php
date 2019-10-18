@@ -347,12 +347,16 @@ class StatisticService
 
     public function insertMissingDays(array $days)
     {
-        sort($days);
         $currentUnixTime = $this->cropTime(time());
+        $days[] = $currentUnixTime;
+
+        sort($days);
         $first = array_shift($days);
+        $last = array_pop($days);
         $days[] = $first;
+        $days[] = $last;
         $newDay = $first;
-        while($newDay < $currentUnixTime){
+        while($newDay < $last){
             $newDay += 24*60*60;
             if(array_search($newDay, $days, true) === false){
                 $days[] = $newDay;
