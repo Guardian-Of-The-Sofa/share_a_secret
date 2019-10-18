@@ -112,4 +112,15 @@ class EventLog extends AbstractEntity
     {
         return $this->secret;
     }
+
+    public static function getEventIDs()
+    {
+        return [
+             EventLog::CREATE,
+             EventLog::DELETE,
+             EventLog::REQUEST,
+             EventLog::SUCCESS,
+             EventLog::NOTFOUND,
+        ];
+    }
 }
