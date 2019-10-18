@@ -1,14 +1,17 @@
 <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
       data-namespace-typo3-fluid="true">
-<f:be.pageRenderer>
+<f:be.pageRenderer
+        pageTitle="hn_project"
+        includeCssFiles="{0: '{f:uri.resource(path: \'css/backend.css\')}'}"
+/>
 
-</f:be.pageRenderer>
-<f:be.container includeCssFiles="{0: '{f:uri.resource(path: \'css/backend.css\')}'}" pageTitle="hn_project">
+<f:be.container>
     <div class="module">
         <div class="module-body femanager-backend">
             <f:render section="Main"/>
         </div>
     </div>
+    <script src="{f:uri.resource(path: 'JavaScript/statistic.js')}"></script>
 </f:be.container>
 
 </html>
