@@ -3,6 +3,8 @@
 namespace Hn\ShareASecret\ViewHelpers;
 
 use Hn\ShareASecret\Utility\ArrayModifier;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
 use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractViewHelper;
@@ -23,7 +25,7 @@ class TableViewHelper extends AbstractViewHelper
         $this->registerArgument('tableClass', 'string', 'A string containing all classes this table should belong to', false);
         $this->registerArgument('top', 'int', 'The number of elements to display from the top', false);
         $this->registerArgument('excludeNull', 'array', 'An array containing column names in which to delete every null value', false);
-        $this->registerArgument('excludeColumns', 'array', 'An array containing column names to exclude from table');
+        $this->registerArgument('excludeColumns', 'array', 'An array containing column names to exclude from table', false);
     }
 
     public static function formatValue(string $column, $value)
@@ -34,12 +36,12 @@ class TableViewHelper extends AbstractViewHelper
         }
         $type = key($columnFormat);
         $format = $columnFormat[$type];
-
         if($type == 'date'){
             $date = new \DateTime();
             $date->setTimestamp($value);
             $value = $date->format($format);
         }
+
         return $value;
     }
 
@@ -79,6 +81,10 @@ class TableViewHelper extends AbstractViewHelper
         $excludeNull = $arguments['excludeNull'] ?? false;
         $excludeColumns = $arguments['excludeColumns'] ?? false;
         $columnNames = $arguments['columnNames'] ?? false;
+
+        if(!$elements){
+            return;
+        }
 
         if(!$columns){
             $element = $elements[0];
