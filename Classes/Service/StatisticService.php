@@ -230,24 +230,6 @@ class StatisticService
         return $startingPoints;
     }
 
-    private function getXValues(array $elements)
-    {
-        $return = [];
-        foreach ($elements as $element) {
-            $return[] = $element['date'];
-        }
-        return array_unique($return);
-    }
-
-    private function initYValues(array $xValues)
-    {
-        $return = [];
-        foreach ($xValues as $x) {
-            $return[$x] = 0;
-        }
-        return $return;
-    }
-
     private function getEvents(array $elements, int $event)
     {
         $return = [];
@@ -259,7 +241,7 @@ class StatisticService
         return $return;
     }
 
-    private function prepareYValuesForGraph(array $events,
+    private function prepareYValuesForEvent(array $events,
                                             array $initializedYValues
     )
     {
@@ -283,7 +265,7 @@ class StatisticService
 
         $yValues = [];
         foreach (EventLog::getEventIDs() as $eventID) {
-            $yValues[$eventID] = $this->prepareYValuesForGraph(
+            $yValues[$eventID] = $this->prepareYValuesForEvent(
                 $eventsGrouped[$eventID],
                 $initializedYValues
             );
@@ -313,57 +295,22 @@ class StatisticService
         return $existingSecretsGraph;
     }
 
-    /**
-     * Crops a unixtime to 00:00,
-     * i.e. a timestamp representing the time "1970.01.01 08:58"
-     * gets cropped to "1970.01.01 00:00"
-     *
-     * IMPORTANT:
-     * This method needs to be reconsidered due to timezones.
-     *
-     * @param int $unixtime
-     * @return int
-     * @throws \Exception
-     */
-    public function cropTime(int $unixtime)
-    {
-        $croppedDate = new DateTime(
-            (new DateTime("@$unixtime", null))->format('Ymd'),
-            new DateTimeZone('+0000') // Important!
-        );
-        return intval($croppedDate->format('U'));
-    }
-
-    public function cropTimeForElements(array $elements)
+    private function getXValues(array $elements, string $column)
     {
         $return = [];
         foreach ($elements as $element) {
-            $date = $element['date'];
-            $element['date'] = $this->cropTime($date);
-            $return[] = $element;
+            $return[] = $element[$column];
         }
-        return $return;
+        return array_unique($return);
     }
 
-    public function insertMissingDays(array $days)
+    private function initYValues(array $xValues)
     {
-        $currentUnixTime = $this->cropTime(time());
-        $days[] = $currentUnixTime;
-
-        sort($days);
-        $first = array_shift($days);
-        $last = array_pop($days);
-        $days[] = $first;
-        $days[] = $last;
-        $newDay = $first;
-        while($newDay < $last){
-            $newDay += 24*60*60;
-            if(array_search($newDay, $days, true) === false){
-                $days[] = $newDay;
-            }
+        $return = [];
+        foreach ($xValues as $x) {
+            $return[$x] = 0;
         }
-        sort($days);
-        return array_unique($days);
+        return $return;
     }
 
     public function getGraphData(array $startingPoints)
@@ -384,122 +331,14 @@ class StatisticService
             ->execute();
         $elements = $statement->fetchAll();
 
-//        $result = [
-//            EventLog::CREATE => [],
-//            EventLog::DELETE => [],
-//            EventLog::REQUEST => [],
-//            EventLog::SUCCESS => [],
-//            EventLog::NOTFOUND => [],
-//        ];
-//        $totals = [
-//            EventLog::CREATE => 0,
-//            EventLog::DELETE => 0,
-//            EventLog::REQUEST => 0,
-//            EventLog::SUCCESS => 0,
-//            EventLog::NOTFOUND => 0,
-//        ];
-//        foreach ($elements as $element) {
-//            $totals[$element['event']]++;
-//            $result[$element['event']][$element['date']] = $totals[$element['event']];
-//        }
-//        $currentTime = time();
-//        $result[EventLog::CREATE][$currentTime] = $totals[EventLog::CREATE];
-//        $result[EventLog::DELETE][$currentTime] = $totals[EventLog::DELETE];
-//        $result[EventLog::REQUEST][$currentTime] = $totals[EventLog::REQUEST];
-//        $result[EventLog::SUCCESS][$currentTime] = $totals[EventLog::SUCCESS];
-//        $result[EventLog::NOTFOUND][$currentTime] = $totals[EventLog::NOTFOUND];
-//
-//        return $result;
-
-        $elements = $this->cropTimeForElements($elements);
-        $xValues = $this->getXValues($elements);
-        $xValues = $this->insertMissingDays($xValues);
+        $xValues = $this->getXValues($elements, 'date');
         $initializedYValues = $this->initYValues($xValues);
         $preparedYValues = $this->prepareYValues($initializedYValues, $elements);
-        $preparedGraphData = [];
+        $graphData = [];
         foreach (EventLog::getEventIDs() as $eventID) {
-            $preparedGraphData[$eventID] = $preparedYValues[$eventID];
+            $graphData[$eventID] = $preparedYValues[$eventID];
         }
-        $graphData = $preparedGraphData;
-//        $graphData = [];
-//        foreach (EventLog::getEventIDs() as $eventID) {
-//            $graphData[$eventID] = $this->createGraphData($preparedGraphData[$eventID],
-//                $startingPoints[$eventID]
-//            );
-//        }
-//        $graphData['existingSecrets'] = $this->getExistingSecretsGraphData(
-//            $startingPoints['existingSecrets'],
-//            $preparedYValues[EventLog::DELETE],
-//            $preparedYValues[EventLog::CREATE]
-//        );
         return $graphData;
-    }
-
-    public function formatData(array $data)
-    {
-        $return = [];
-        foreach ($data as $x => $y){
-            // The following doesn't work, unixtime is an absolute value (always UTC+0)
-//            $x = (new DateTime("@$x", new DateTimeZone('Europe/Berlin')))->format('U');
-            $return[] = [$x*1000, $y];
-        }
-        return $return;
-    }
-
-    public function formatGraphData(array $graphData)
-    {
-        $return = [];
-        foreach ($graphData as $key => $value){
-            $return[$key] = $this->formatData($value);
-        }
-        return $return;
-    }
-
-    /**
-     * returns activity highchart chart configuration
-     *
-     * @return array
-     */
-    public function getActivityChartConfig()
-    {
-        $startingPoints = $this->getStartingPoints(0);
-        $graphData = $this->getGraphData($startingPoints);
-        $graphData = $this->formatGraphData($graphData);
-        $series = [];
-        foreach($graphData as $key => $value){
-            $series[] = [
-                'type' => 'spline',
-                'name' => $this->translate("activity_chart_label.event.$key") ?? "$key",
-                'data' => $value,
-                'tooltip' => [
-                    'valueDecimals' => 0,
-                ]
-            ];
-        }
-        return [
-            'title' => [
-                'text' => 'Activity chart'
-            ],
-
-            'series' => $series,
-
-            'legend' => [
-                'enabled' => true,
-                'layout' => 'horizontal',
-                'align' => 'left',
-                'verticalAlign' => 'bottom'
-            ],
-
-            'yAxis' =>  [
-                'title' =>  [
-                    'text' =>  'Total events counted',
-                ],
-            ],
-
-//            'time' => [
-//                'timezoneOffset' => 0,
-//            ],
-        ];
     }
 
     public function getStatistics()
@@ -548,9 +387,5 @@ class StatisticService
 //        $graphData = $this->getGraphData($startingPoints);
 //        $return['graphData'] = $graphData;
         return $return;
-    }
-
-    private function translate($key) {
-        return LocalizationUtility::translate("LLL:EXT:share_a_secret/Resources/Private/Language/lang_mod.xlf:$key");
     }
 }
