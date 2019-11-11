@@ -11,6 +11,7 @@
     <div data-highchart="{activityChartConfig -> f:format.json()}" style="width:100%; height:800px;"></div>
 
     <sas:table elements="{statistics.totalStatistic}"
+               tableClass="table-bordered"
                columnNames="{
                     createdSecrets: 'Created secrets',
                     readSecrets: 'Read secrets',
@@ -19,8 +20,31 @@
                     deletedSecrets: 'Deleted secrets'
                }"
                tableHeading="Total statistics"
+               searchable="false"
+    />
+    <sas:table elements="{statistics.existingSecrets}"
+               tableClass="table-bordered sortable"
+               tableHeading="All secrets in the database"
+               excludeColumns="{
+                    0: 'message',
+                    1: 'index_hash',
+                    2: 'pid',
+                    3: 'uid',
+                    4: 'secret',
+                    5: 'event',
+                    6: 'date'
+               }"
+               columnNames="{
+                    crdate: 'Creation date',
+                    dateRead: 'Date of reading'
+               }"
+               formats="{
+                    crdate: {date: 'd.m.Y H:i:s'},
+                    dateRead: {date: 'd.m.Y H:i:s'}
+               }"
     />
     <sas:table elements="{statistics.mostRecentEvents}"
+               tableClass="table-bordered sortable"
                tableHeading="Most recent events"
                columns="{
                     uid: 'Event ID',
@@ -29,68 +53,10 @@
                     message: 'Logged message'
                }"
                formats="{
-                    date: {date: 'Y.m.d. H:i:s'}
+                    date: {date: 'd.m.Y H:i:s'}
                }"
     />
-    <sas:table elements="{statistics.createdSecrets}"
-               tableHeading="All created secrets"
-               excludeColumns="{
-                    0: 'message',
-                    1: 'index_hash'
-               }"
-               formats="{creationDate: {date: 'Y.m.d. H:i:s'}}"
-               columns="{
-                    secret: 'Secret ID',
-                    creationDate: 'Creation date'
-               }"
-    />
-    <sas:table elements="{statistics.existingSecrets}"
-               tableHeading="All secrets in the database"
-               excludeColumns="{
-                    0: 'message',
-                    1: 'index_hash',
-                    2: 'pid'
-               }"
-               columnNames="{
-                    uid: 'Secret ID',
-                    crdate: 'Creation date'
-               }"
-               formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
-    />
-    <sas:table elements="{statistics.unreadSecrets}"
-               excludeColumns="{
-                    0: 'message',
-                    1: 'index_hash',
-                    2: 'pid'
-               }"
-               tableHeading="All unread secrets"
-               formats="{crdate: {date: 'Y.m.d. H:i:s'}}"
-               columnNames="{
-                    crdate: 'Creation date',
-                    uid: 'Secret ID'
-               }"
-    />
-    <sas:table elements="{statistics.readSecrets}"
-               tableHeading="All read secrets"
-               columns="{
-                    secret: 'Secret ID',
-                    creationDate: 'Creation date',
-                    logDate: 'Date of reading'
-               }"
-               formats="{
-                    creationDate: {date: 'Y.m.d. H:i:s'},
-                    logDate: {date: 'Y.m.d. H:i:s'}
-               }"
-    />
-    <sas:table elements="{statistics.deletedSecrets}"
-               tableHeading="All deleted secrets"
-               columns="{
-                    secret: 'Secret ID',
-                    date: 'Deletion date'
-               }"
-               formats="{
-                    date: {date: 'Y.m.d. H:i:s'}
-               }"
-    />
+    <script src="{f:uri.resource(path: 'JavaScript/sortTable.js')}"></script>
+    <script src="{f:uri.resource(path: 'JavaScript/searchTable.js')}"></script>
 </f:section>
 </html>
