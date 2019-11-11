@@ -139,8 +139,25 @@ class StatisticService
         $queryBuilder = clone $this->getPreparedQueryBuilder();
         $queryBuilder->resetQueryParts();
         $statement = $queryBuilder
-            ->select('*')
-            ->from('tx_shareasecret_domain_model_secret')
+            ->select('secret.uid as SecretID', 'secret.*', 'eventlog.*')
+            ->addSelectLiteral($queryBuilder->expr()->max('eventlog.date', 'dateRead'))
+            ->from('tx_shareasecret_domain_model_secret', 'secret')
+            ->leftJoin(
+                'secret',
+                'tx_shareasecret_domain_model_eventlog',
+                'eventlog',
+                $queryBuilder->expr()->andX(
+                    $queryBuilder->expr()->eq(
+                        'secret.uid',
+                        $queryBuilder->quoteIdentifier('eventlog.secret')
+                    ),
+                    $queryBuilder->expr()->eq(
+                        'eventlog.event',
+                        $queryBuilder->createNamedParameter(EventLog::SUCCESS)
+                    )
+                )
+            )
+            ->groupBy('SecretID')
             ->execute();
         return $statement->fetchAll();
     }
@@ -313,7 +330,7 @@ class StatisticService
         return $return;
     }
 
-    public function getGraphData(array $startingPoints)
+    public function getEventGraphs(array $startingPoints)
     {
         $startTimestamp = $startingPoints['startTimestamp'];
         // get x-values and initialize y-values
@@ -334,11 +351,11 @@ class StatisticService
         $xValues = $this->getXValues($elements, 'date');
         $initializedYValues = $this->initYValues($xValues);
         $preparedYValues = $this->prepareYValues($initializedYValues, $elements);
-        $graphData = [];
+        $eventGraphs = [];
         foreach (EventLog::getEventIDs() as $eventID) {
-            $graphData[$eventID] = $preparedYValues[$eventID];
+            $eventGraphs[$eventID] = $preparedYValues[$eventID];
         }
-        return $graphData;
+        return $eventGraphs;
     }
 
     public function getStatistics()
