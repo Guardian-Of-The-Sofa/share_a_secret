@@ -26,10 +26,14 @@ class TableViewHelper extends AbstractViewHelper
         $this->registerArgument('top', 'int', 'The number of elements to display from the top', false);
         $this->registerArgument('excludeNull', 'array', 'An array containing column names in which to delete every null value', false);
         $this->registerArgument('excludeColumns', 'array', 'An array containing column names to exclude from table', false);
+        $this->registerArgument('searchable', 'bool', 'Renders a search input box to the table', false, true);
     }
 
     public static function formatValue(string $column, $value)
     {
+        if($value === null){
+            return '';
+        }
         $columnFormat = self::$columnFormats[$column] ?? null;
         if(!$columnFormat){
             return $value;
@@ -71,7 +75,7 @@ class TableViewHelper extends AbstractViewHelper
     )
     {
         $return = '';
-        self::$columnFormats = $arguments['formats'] ?? '';
+        self::$columnFormats = $arguments['formats'] ?? [];
         $tableHeading = $arguments['tableHeading'] ?? '';
         $tableClass = $arguments['tableClass'] ?? '';
         $ordering = $arguments['ordering'] ?? false;
@@ -81,9 +85,10 @@ class TableViewHelper extends AbstractViewHelper
         $excludeNull = $arguments['excludeNull'] ?? false;
         $excludeColumns = $arguments['excludeColumns'] ?? false;
         $columnNames = $arguments['columnNames'] ?? false;
+        $searchable = $arguments['searchable'];
 
         if(!$elements){
-            return;
+            return '';
         }
 
         if(!$columns){
@@ -118,14 +123,19 @@ class TableViewHelper extends AbstractViewHelper
             }
         }
 
+        $return = '<div class="table-view-helper">';
+        if($searchable){
+            $return .= "<span class=\"search\">search: <input type=\"text\" name=\"search\" size=\"20\"></span>";
+            $tableClass .= " searchable";
+        }
+        $return .=  "<table class=\"table $tableClass\">";
         // create table heading
-        $return .= "<h3> $tableHeading </h3>"
-                .  "<table class=\"table $tableClass\">";
+        $return .= "<caption>$tableHeading</caption>";
 
         // create table head
         $return .= '<tr>';
         foreach ($columns as $column => $name){
-            $return .= "<th scope=\"col\">$name</th>";
+            $return .= "<th scope=\"col\" data-column-name=\"$column\" sorting=\"both\">$name</th>";
         }
         $return .= '</tr>';
 
@@ -135,11 +145,17 @@ class TableViewHelper extends AbstractViewHelper
             $i = 0;
             foreach ($columns as $column => $name){
                 $value = $element[$column];
+                if(self::$columnFormats[$column]){
+                    $rawAttribute = "data-raw=\"$value\"";
+                }else{
+                    $rawAttribute = '';
+                }
+
                 if($i == 0){
-                    $return .= '<th scope="row">' . self::formatValue($column, $value) . '</th>';
+                    $return .= "<th scope=\"row\" data-column-name=\"$column\" $rawAttribute>" . self::formatValue($column, $value) . '</th>';
                     $i++;
                 }else{
-                    $return .= '<td>' . self::formatValue($column, $value) . '</td>';
+                    $return .= "<td data-column-name=\"$column\" $rawAttribute>" . self::formatValue($column, $value) . '</td>';
                 }
             }
             /*
@@ -157,6 +173,7 @@ class TableViewHelper extends AbstractViewHelper
             $return .=  '</tr>';
         }
         $return .= '</table>';
+        $return .= '</div>';
         return $return;
     }
 }
