@@ -5,3 +5,50 @@
 .table-striped > tbody > tr:nth-of-type(even) {
     background-color: #EEEEEE;
 }
+
+table.sortable th[sorting="both"] {
+    background-image: url("../Icons/sort-solid.svg");
+}
+
+table.sortable th[sorting="asc"] {
+    background-image: url("../Icons/sort-up-solid.svg");
+}
+
+table.sortable th[sorting="desc"] {
+    background-image: url("../Icons/sort-down-solid.svg");
+}
+
+table.sortable th[sorting] {
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 20px 20px;
+}
+
+table.sortable th[scope="col"] {
+    box-shadow: 0 0 2px grey;
+}
+
+span.search {
+    position: absolute;
+    right: 0px;
+    top: 5px;
+    margin: 5px 5px;
+}
+
+span.search input {
+    box-shadow: 0 0 2px grey;
+}
+
+div.table-view-helper caption {
+    color: black;
+    font-size: 12pt;
+    margin: 10px 0;
+}
+
+div.table-view-helper {
+    position: relative;
+    border: 2px solid grey;
+    border-radius: 5px;
+    margin: 5px 0;
+    padding: 0 5px;
+}
