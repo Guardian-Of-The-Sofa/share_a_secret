@@ -28,7 +28,7 @@ class ActivityChartService
     /**
      * converts seconds to milliseconds, highcharts demands this
      */
-    public function formatGraphData(array $graphData)
+    public function formatGraphs(array $graphData)
     {
         $return = [];
         foreach ($graphData as $event => $graph){
@@ -83,7 +83,7 @@ class ActivityChartService
      * @param array $graphData
      * @return array
      */
-    public function prepareGraphData(array $graphData)
+    public function prepareGraphs(array $graphData)
     {
         $xValues = $this->getXValuesFromGraphs($graphData);
         $xValues[] = time();
@@ -135,9 +135,13 @@ class ActivityChartService
      */
     public function cropTime(int $unixtime)
     {
+        $offsetSec = (new DateTime("now"))->getOffset();
+        $unixtime += $offsetSec;
+
         $croppedDate = new DateTime(
             (new DateTime("@$unixtime", null))->format('Ymd'),
-            new DateTimeZone('+0000') // Important!
+            new DateTimeZone('+0000') // Important! Otherwise the current timezone
+                                              // offset gets substracted on the conversion ->format('U') below
         );
         return intval($croppedDate->format('U'));
     }
@@ -150,11 +154,11 @@ class ActivityChartService
     public function getActivityChartConfig()
     {
         $startingPoints = $this->statisticService->getStartingPoints(0);
-        $graphData = $this->statisticService->getGraphData($startingPoints);
-        $graphData = $this->prepareGraphData($graphData);
-        $graphData = $this->formatGraphData($graphData);
+        $eventGraphs = $this->statisticService->getEventGraphs($startingPoints);
+        $eventGraphs = $this->prepareGraphs($eventGraphs);
+        $eventGraphs = $this->formatGraphs($eventGraphs);
         $series = [];
-        foreach($graphData as $key => $value){
+        foreach($eventGraphs as $key => $value){
             $series[] = [
                 'type' => 'spline',
                 'name' => $this->translate("activity_chart_label.event.$key") ?? "$key",
