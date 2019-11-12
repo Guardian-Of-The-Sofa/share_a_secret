@@ -125,21 +125,24 @@ class TableViewHelper extends AbstractViewHelper
 
         $return = '<div class="table-view-helper">';
         if($searchable){
-            $return .= "<span class=\"search\">search: <input type=\"text\" name=\"search\" size=\"20\"></span>";
+            $searchableHTML = "<span class=\"search form-control\">search: <input type=\"text\" name=\"search\" size=\"20\"></span>";
             $tableClass .= " searchable";
         }
         $return .=  "<table class=\"table $tableClass\">";
         // create table heading
-        $return .= "<caption>$tableHeading</caption>";
+        $return .= "<caption>$tableHeading $searchableHTML</caption>";
 
         // create table head
+        $return .= '<thead>';
         $return .= '<tr>';
         foreach ($columns as $column => $name){
-            $return .= "<th scope=\"col\" data-column-name=\"$column\" sorting=\"both\">$name</th>";
+            $return .= "<th scope=\"col\" data-sorting-order=\"both\">$name</th>";
         }
         $return .= '</tr>';
+        $return .= '</thead>';
 
         // create table rows
+        $return .= '<tbody>';
         foreach ($elements as $element){
             $return .= '<tr>';
             $i = 0;
@@ -152,26 +155,15 @@ class TableViewHelper extends AbstractViewHelper
                 }
 
                 if($i == 0){
-                    $return .= "<th scope=\"row\" data-column-name=\"$column\" $rawAttribute>" . self::formatValue($column, $value) . '</th>';
+                    $return .= "<th scope=\"row\" $rawAttribute>" . self::formatValue($column, $value) . '</th>';
                     $i++;
                 }else{
-                    $return .= "<td data-column-name=\"$column\" $rawAttribute>" . self::formatValue($column, $value) . '</td>';
+                    $return .= "<td $rawAttribute>" . self::formatValue($column, $value) . '</td>';
                 }
             }
-            /*
-            foreach ($columns as $column => $name){
-                $value = ObjectAccess::getProperty($element, $column);
-                if($i == 0){
-                    $return .= '<th scope="row">' . self::formatValue($column, $value) . '</th>';
-                    $i++;
-                }else{
-                    $value = ObjectAccess::getProperty($element, $column);
-                    $return .= '<td>' . self::formatValue($column, $value) . '</td>';
-                }
-            }
-            */
             $return .=  '</tr>';
         }
+        $return .= '</tbody>';
         $return .= '</table>';
         $return .= '</div>';
         return $return;
