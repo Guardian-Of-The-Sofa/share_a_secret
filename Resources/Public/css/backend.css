@@ -6,19 +6,19 @@
     background-color: #EEEEEE;
 }
 
-table.sortable th[sorting="both"] {
+table.sortable th[data-sorting-order="both"] {
     background-image: url("../Icons/sort-solid.svg");
 }
 
-table.sortable th[sorting="asc"] {
+table.sortable th[data-sorting-order="asc"] {
     background-image: url("../Icons/sort-up-solid.svg");
 }
 
-table.sortable th[sorting="desc"] {
+table.sortable th[data-sorting-order="desc"] {
     background-image: url("../Icons/sort-down-solid.svg");
 }
 
-table.sortable th[sorting] {
+table.sortable th[data-sorting-order] {
     background-repeat: no-repeat;
     background-position: right center;
     background-size: 20px 20px;
@@ -28,27 +28,22 @@ table.sortable th[scope="col"] {
     box-shadow: 0 0 2px grey;
 }
 
-span.search {
+div.table-view-helper span.search {
     position: absolute;
-    right: 0px;
-    top: 5px;
-    margin: 5px 5px;
-}
-
-span.search input {
-    box-shadow: 0 0 2px grey;
+    border: none;
+    box-shadow: none;
+    right: 0;
+    top: 0;
+    width: fit-content;
 }
 
 div.table-view-helper caption {
+    position: relative;
     color: black;
-    font-size: 12pt;
-    margin: 10px 0;
+    font-size: 14px;
 }
 
 div.table-view-helper {
-    position: relative;
-    border: 2px solid grey;
-    border-radius: 5px;
     margin: 5px 0;
     padding: 0 5px;
 }
