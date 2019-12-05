@@ -126,12 +126,13 @@ class StatisticService
         $queryBuilder->resetQueryParts();
         $statement = $queryBuilder
             ->select('*')
-            ->from('tx_shareasecret_domain_model_secret')
-            ->where(
+            ->from('tx_shareasecret_domain_model_secret');
+        if(count($readSecretIDs)){
+            $statement->where(
                 $queryBuilder->expr()->notIn('uid', $readSecretIDs)
-            )
-            ->execute();
-        return $statement->fetchAll();
+            );
+        }
+        return $statement->execute()->fetchAll();
     }
 
     public function getExistingSecrets()
