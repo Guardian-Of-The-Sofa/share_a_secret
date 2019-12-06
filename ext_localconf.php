@@ -29,20 +29,23 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['scheduler']['tasks'][\TYPO3\CMS\Sched
 if(TYPO3_MODE === 'BE') {
     /** @var PageRenderer $pageRenderer */
     $pageRenderer = GeneralUtility::makeInstance(PageRenderer::class);
+    $requireJsConfigPackages = $pageRenderer->getRequireJsConfig(PageRenderer::REQUIREJS_SCOPE_RESOLVE)['packages'];
+    $requireJsConfigPackages = $requireJsConfigPackages ? $requireJsConfigPackages : [];
+    $extPackagesConfig = [
+        [
+            'name' => 'highcharts',
+            'main' => 'highcharts'
+        ],
+        [
+            'name' => 'highcharts/highstock',
+            'main' => 'highstock'
+        ],
+    ];
     $pageRenderer->addRequireJsConfiguration([
         'paths' => [
             'highcharts' => 'https://code.highcharts.com',
             'highcharts/highstock' => 'https://code.highcharts.com/stock',
         ],
-        'packages' => [
-            1 => [
-                'name' => 'highcharts',
-                'main' => 'highcharts'
-            ],
-            2 => [
-                'name' => 'highcharts/highstock',
-                'main' => 'highstock'
-            ],
-        ],
+        'packages' => array_merge($requireJsConfigPackages, $extPackagesConfig),
     ]);
 }
