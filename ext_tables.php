@@ -7,8 +7,6 @@
     ''
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript/', 'Include CSS/JS');
-
 // Module System > Backend Users
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerModule(
     'Hn.ShareASecret',

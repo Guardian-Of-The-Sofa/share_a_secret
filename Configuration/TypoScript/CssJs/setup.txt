@@ -1,0 +1,6 @@
+page {
+    includeJSFooter {
+        share_a_secret = EXT:share_a_secret/Resources/Public/js/CopyToClipboard.js
+        share_a_secret_2 = EXT:share_a_secret/Resources/Public/js/InvalidField.js
+    }
+}
