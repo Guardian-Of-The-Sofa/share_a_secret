@@ -1,8 +1,8 @@
-.sas-is-invalid {
+.form-group > .sas-is-invalid {
     border-color: red;
-    box-shadow: 0 0 1px 1px;
+    box-shadow: 0 0 3px 0px red;
 }
 
-.sas-invalid-feedback {
+.form-group > .sas-invalid-feedback {
     color: red;
 }

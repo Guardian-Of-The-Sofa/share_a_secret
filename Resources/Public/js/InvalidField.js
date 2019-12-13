@@ -1,5 +1,5 @@
-$('.is-invalid').each(function(index, element) {
+$('.sas-is-invalid').each(function(index, element) {
     $(element).on('input', function() {
-        $(element).removeClass('is-invalid').siblings('.invalid-feedback').hide();
+        $(element).removeClass('sas-is-invalid').siblings('.sas-invalid-feedback').hide();
     });
 });
