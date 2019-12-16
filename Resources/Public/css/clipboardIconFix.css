@@ -1,0 +1,25 @@
+.input-group {
+    height: 100%;
+}
+
+.input-group {
+    display: table;
+    width: 100%;
+}
+
+.input-group > textarea.form-control {
+    display: table-cell;
+    width: 100%;
+    vertical-align: top;
+}
+
+.input-group > .input-group-append {
+    display: table-cell;
+    width: 1%;
+    height: 100%;
+    vertical-align: top;
+}
+
+.input-group-append > .copy-to-clipboard {
+    height: 100%;
+}
