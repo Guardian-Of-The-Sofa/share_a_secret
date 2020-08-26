@@ -5,3 +5,6 @@ userPasswordLength = 8
 # TODO: multiline comment?
 # label=Use special characters : If set, the generated user password will contain special characters. If the password length is less than 4 it will be set to 4.
 containsSpecialCharacters = 0
+
+# cat=Basic; type=int+; label=Maximum message length: This sets the maximum message length. Standard is 1000 characters.
+messageMaxLength = 1000

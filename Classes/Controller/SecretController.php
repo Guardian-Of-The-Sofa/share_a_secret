@@ -44,19 +44,18 @@ class SecretController extends ActionController
     }
 
     /**
-     * @throws Exception
+     * @param array $isInvalid
+     * @param string $message
+     * @throws \TYPO3\CMS\Extbase\Mvc\Exception\NoSuchArgumentException
      */
-    public function newAction()
+    public function newAction(array $isInvalid = [], string $message = '')
     {
-        if ($GLOBALS['BE_USER'] === null) {
-            $this->redirect('pleaseLogin');
-        }
         $userPassword = $this->secretService->generateUserPassword();
-        if ($this->request->hasArgument('isInvalid')) {
-            $isInvalid = $this->request->getArgument('isInvalid');
-            $this->view->assign('isInvalid', $isInvalid);
-        }
+        $this->view->assign('isInvalid', $isInvalid);
+        $this->view->assign('message', $message);
+        $this->view->assign('messageLength', strlen($message));
         $this->view->assign('userPassword', $userPassword);
+        $this->view->assign('messageMaxLength', $this->secretService->getMessageMaxLength());
     }
 
     /**
@@ -75,10 +74,11 @@ class SecretController extends ActionController
                 'userPassword' => $userPassword
             ]);
         } catch (InvalidArgumentValueException $e) {
-            $this->redirect('new', null, null, [
+            $this->forward('new', null, null, [
                 'isInvalid' => [
-                    'message' => strlen(trim($message)) === 0,
+                    'message' => 1,
                 ],
+                'message' => $message,
             ]);
         }
     }

@@ -19,6 +19,8 @@ use TYPO3\CMS\Extbase\Persistence\Exception\IllegalObjectTypeException;
 
 class SecretService
 {
+    public $messageMaxLength;
+
     /**
      * @var SecretRepository;
      */
@@ -86,7 +88,8 @@ class SecretService
     {
         $message = trim($message);
         $userPassword = trim($userPassword);
-        if (!($message && $userPassword)) {
+
+        if (!($message && $userPassword) || !$this->isValidMessage($message)) {
             throw new InvalidArgumentValueException();
         }
 
@@ -215,6 +218,14 @@ class SecretService
     }
 
     /**
+     * @return mixed
+     */
+    public function getMessageMaxLength()
+    {
+        return $this->messageMaxLength;
+    }
+
+    /**
      * @param string $userPassword
      * @param string $linkHash
      * @return string
@@ -291,5 +302,18 @@ class SecretService
                 $this->userPasswordLength = 3;
             }
         }
+
+        $this->messageMaxLength = $backendSettings['messageMaxLength'];
+    }
+
+    private function isValidMessage(string $message)
+    {
+        $message = trim($message);
+
+        if($message === ''){
+            return false;
+        }
+
+        return strlen($message) <= $this->messageMaxLength;
     }
 }
