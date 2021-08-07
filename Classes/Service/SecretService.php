@@ -279,7 +279,7 @@ class SecretService
             $backendSettings = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['share_a_secret']);
         }
 
-        $this->userPasswordLength = $backendSettings['userPasswordLength'];
+        $this->userPasswordLength = $backendSettings['userPasswordLength'] ?? 8;
         if($this->userPasswordLength > 100){
             $this->userPasswordLength = 100;
         }
@@ -303,7 +303,7 @@ class SecretService
             }
         }
 
-        $this->messageMaxLength = $backendSettings['messageMaxLength'];
+        $this->messageMaxLength = $backendSettings['messageMaxLength'] ?? 1000;
     }
 
     private function isValidMessage(string $message)
