@@ -38,7 +38,6 @@ class SecretController extends ActionController
         EventLogService $eventLogService
     )
     {
-        parent::__construct();
         $this->secretService = $secretService;
         $this->eventLogService = $eventLogService;
     }

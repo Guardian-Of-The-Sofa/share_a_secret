@@ -20,7 +20,6 @@ class LogController extends ActionController
         ActivityChartService $activityChartService
     )
     {
-        parent::__construct();
         $this->statisticService = $statisticService;
         $this->activityChartService = $activityChartService;
     }

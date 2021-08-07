@@ -8,10 +8,10 @@ $EM_CONF[$_EXTKEY] = [
     'author_company' => 'hauptsache.net',
     'author_email' => 'jens@hauptsache.net',
     'state' => 'alpha',
-    'version' => '1.1.1',
+    'version' => '1.2.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '8.7.27-9.5.99',
+            'typo3' => '8.7.27<11',
         ],
     ],
     'autoload' => [

@@ -12,10 +12,10 @@ use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 class StatisticService
 {
-    /* @var QueryBuilder */
+    /** @var QueryBuilder */
     private $preparedQueryBuilder;
 
-    /* @var QueryBuilder */
+    /** @var QueryBuilder */
     private $queryBuilder;
 
     public function __construct()
@@ -76,7 +76,6 @@ class StatisticService
                     $queryBuilder->createNamedParameter(EventLog::CREATE)
                 )
             )
-            ->groupBy('secret')
             ->execute();
         return $statement->fetchAll();
     }
@@ -115,7 +114,6 @@ class StatisticService
                     $queryBuilder->createNamedParameter(EventLog::SUCCESS)
                 )
             )
-            ->groupBy('secret')
             ->execute();
         return $statement->fetchAll();
     }
@@ -137,28 +135,28 @@ class StatisticService
 
     public function getExistingSecrets()
     {
-        $queryBuilder = clone $this->getPreparedQueryBuilder();
-        $queryBuilder->resetQueryParts();
-        $statement = $queryBuilder
-            ->select('secret.uid as SecretID', 'secret.*', 'eventlog.*')
-            ->addSelectLiteral($queryBuilder->expr()->max('eventlog.date', 'dateRead'))
-            ->from('tx_shareasecret_domain_model_secret', 'secret')
-            ->leftJoin(
-                'secret',
-                'tx_shareasecret_domain_model_eventlog',
-                'eventlog',
-                $queryBuilder->expr()->andX(
-                    $queryBuilder->expr()->eq(
-                        'secret.uid',
-                        $queryBuilder->quoteIdentifier('eventlog.secret')
-                    ),
-                    $queryBuilder->expr()->eq(
-                        'eventlog.event',
-                        $queryBuilder->createNamedParameter(EventLog::SUCCESS)
-                    )
+        $queryBuilder = clone $this->preparedQueryBuilder;
+
+        $deletedSecrets = $queryBuilder
+            ->andWhere(
+                $queryBuilder->expr()->eq(
+                    'er.event',
+                    $queryBuilder->createNamedParameter(EventLog::DELETE)
                 )
             )
-            ->groupBy('SecretID')
+            ->execute()
+            ->fetchAll();
+        $deletedSecrets = array_column($deletedSecrets, 'secret');
+
+        $statement = $this->queryBuilder->resetQueryParts()
+            ->select('*')
+            ->from('tx_shareasecret_domain_model_secret', 'secret')
+            ->where(
+                $this->queryBuilder->expr()->notIn(
+                    'secret.uid',
+                    $deletedSecrets
+                )
+            )
             ->execute();
         return $statement->fetchAll();
     }
@@ -241,8 +239,8 @@ class StatisticService
                     'date',
                     $this->queryBuilder->createNamedParameter($unixTimestamp)
                 )
-            )
-            ->groupBy('secret');
+            );
+
         $readSecrets = count($statement->execute()->fetchAll());
         $startingPoints['readSecrets'] = $readSecrets;
         return $startingPoints;
